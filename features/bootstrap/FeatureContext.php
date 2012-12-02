@@ -10,35 +10,60 @@ use Behat\Gherkin\Node\PyStringNode,
 //
 // Require 3rd-party libraries here:
 //
-//   require_once 'PHPUnit/Autoload.php';
-//   require_once 'PHPUnit/Framework/Assert/Functions.php';
-//
+require_once 'PHPUnit/Autoload.php';
+require_once 'PHPUnit/Framework/Assert/Functions.php';
 
 /**
  * Features context.
  */
 class FeatureContext extends BehatContext
 {
-    /**
-     * Initializes context.
-     * Every scenario gets it's own context object.
-     *
-     * @param array $parameters context parameters (set them up through behat.yml)
-     */
+    private $BASE_URL = "http://api.pvt/report";
+
+    private $ch;
+
     public function __construct(array $parameters)
     {
         // Initialize your context here
     }
 
-//
-// Place your definition and hook methods here:
-//
-//    /**
-//     * @Given /^I have done something with "([^"]*)"$/
-//     */
-//    public function iHaveDoneSomethingWith($argument)
-//    {
-//        doSomethingWith($argument);
-//    }
-//
+    /**
+    @AfterScenario
+     */
+    public function closeConnection()
+    {
+        if ($this->ch) {
+            curl_close($this->ch);
+            $this->ch = null;
+        }
+    }
+
+    /**
+     * @Given /^I have not supplied my credentials$/
+     */
+    public function iHaveNotSuppliedMyCredentials()
+    {
+
+    }
+
+    /**
+     * @When /^I submit my PVT result$/
+     */
+    public function iSubmitMyPvtResult()
+    {
+        $this->ch = curl_init($this->BASE_URL);
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->ch, CURLOPT_POST, 1);
+        curl_setopt($this->ch, CURLOPT_POSTFIELDS, '');
+        curl_exec($this->ch);
+    }
+
+    /**
+     * @Then /^I should get a (\d+) error$/
+     */
+    public function iShouldGetAError($errorCode)
+    {
+        $errorNo = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+        assertEquals(403, $errorNo);
+    }
 }
