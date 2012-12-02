@@ -59,11 +59,11 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Then /^I should get a (\d+) error$/
+     * @Then /^I should get a (\d+) response code$/
      */
-    public function iShouldGetAError($errorCode)
+    public function iShouldGetAResponseCode($expectedResponseCode)
     {
-        $errorNo = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
-        assertEquals(403, $errorNo);
+        $responseCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+        assertEquals($expectedResponseCode, $responseCode);
     }
 }

@@ -6,4 +6,4 @@ Feature: Result submission
     Scenario: An authorised user
         Given I have not supplied my credentials
         When I submit my PVT result
-        Then I should get a 403 error
+        Then I should get a 401 response code
