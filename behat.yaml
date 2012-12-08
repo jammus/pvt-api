@@ -1,0 +1,17 @@
+default:
+  context:
+    class: 'FeatureContext'
+    parameters:
+      database:
+        username: 'jamess'
+        password: ''
+        dbname: 'pvt-test'
+        host: '127.0.0.1'
+        driver: 'pdo_pgsql'
+      Phabric:
+        entities:
+          users:
+            tableName: 'users'
+            primaryKey: 'id'
+            nameCol: 'email'
+            sequence: 'users_id_seq'
