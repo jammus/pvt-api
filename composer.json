@@ -1,15 +1,23 @@
 {
     "require": {
         "behat/behat": "2.4.*@stable",
-        "slim/slim": "2.*"
+        "silex/silex": "1.0.*@dev",
+        "doctrine/dbal": "2.*"
     },
 
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
-        "benwaine/phabric": "*@dev"
+        "benwaine/phabric": "*@dev",
+        "mockery/mockery": ">=0.7.2"
     },
 
     "config": {
         "bin-dir": "bin/"
+    },
+
+    "autoload": {
+        "psr-0": { 
+            "Pvt": "src/"
+        }
     }
 }

@@ -49,7 +49,7 @@ class FeatureContext extends BehatContext
     }
 
     /**
-    @AfterScenario
+     * @AfterScenario
      */
     public function closeConnection()
     {
@@ -57,6 +57,15 @@ class FeatureContext extends BehatContext
             curl_close($this->ch);
             $this->ch = null;
         }
+    }
+
+    /**
+     * @AfterScenario 
+     */
+    public function clearDB($event)
+    {
+        $this->phabric->reset();
+        $this->db->executeQuery('DELETE FROM users');
     }
 
     /**
@@ -82,7 +91,7 @@ class FeatureContext extends BehatContext
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_POST, 1);
         curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postData);
-        $this->response = json_decode(curl_exec($this->ch), true);
+        $this->response = curl_exec($this->ch);
     }
 
     /**
@@ -99,7 +108,7 @@ class FeatureContext extends BehatContext
      */
     public function iAttemptToCreateANewAccount()
     {
-        $this->url = $this->BASE_URL + 'account';
+        $this->url = $this->BASE_URL . 'users';
         $this->submitForm();
     }
 
@@ -136,12 +145,12 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Given /^I should be told that I must supply a "([^"]*)"$/
+     * @Given /^I should see the error message "([^"]*)"$/
      */
-    public function iShouldBeToldThatIMustSupplyA($message)
+    public function iShouldSeeTheErrorMessage($message)
     {
         $response = $this->jsonResponse();
-        assertStringEndsWith($message, $response['message']);
+        assertEquals($message, $response['error']['message']);
     }
 
     /**
@@ -150,11 +159,10 @@ class FeatureContext extends BehatContext
     public function theFollowingAccountsExist(TableNode $table)
     {
         $this->phabric->insertFromTable('users', $table);
-        $this->phabric->reset();
     }
 
     private function jsonResponse()
     {
-        return json_decode($this->response);
+        return json_decode($this->response, true);
     }
 }
