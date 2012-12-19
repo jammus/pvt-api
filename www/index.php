@@ -25,11 +25,11 @@ $userstore = new SqlUserStore($connection);
 $createUser = new CreateUser($userstore);
 
 $app = new \Silex\Application();
-
 $app['debug'] = true;
 
 $app->post('/report', function (Silex\Application $app) {
-    $app->response()->status(401);
+    $response = errorResponse(401, 'Please supply a valid access token.');
+    return $app->json($response, $response['error']['code']);
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser) {
@@ -41,24 +41,24 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
         );
     }
     catch (DuplicateUserException $e) {
-        $error = array(
-            'error' => array(
-                'code' => 409,
-                'message' => 'That email address has already been used to register an account.'
-            )
-        );
-        return $app->json($error, 409);
+        $response = errorResponse(409, 'That email address has already been used to register an account.');
+        return $app->json($response, $response['error']['code']);
     }
-    if (! $result->isOk()) {
-        $error = array(
-            'error' => array(
-                'code' => 400,
-                'message' => 'Please supply a valid email, password and name.'
-            )
-        );
-        return $app->json($error, 400);
+    if (!$result->isOk()) {
+        $response = errorResponse(400, 'Please supply a valid email, password and name.');
+        return $app->json($response, $response['error']['code']);
     }
     return $app->json(array());
 });
+
+function errorResponse($code, $message)
+{
+    return array(
+        'error' => array(
+            'code' => $code,
+            'message' => $message
+        )
+    );
+}
 
 $app->run();

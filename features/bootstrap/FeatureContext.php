@@ -45,7 +45,13 @@ class FeatureContext extends BehatContext
             $parameters['Phabric']['entities']
         );
         $this->phabric = new Phabric\Phabric($datasource);
-        $users = $this->phabric->createEntitiesFromConfig($parameters['Phabric']['entities']);
+        $this->phabric->createEntitiesFromConfig($parameters['Phabric']['entities']);
+        $this->phabric->addDataTransformation(
+            'USERLOOKUP', function ($email, $phabric) {
+                $users = $phabric->getEntity('users');
+                return $users->getNamedItemId($email);
+            }
+        );
     }
 
     /**
@@ -154,8 +160,8 @@ class FeatureContext extends BehatContext
     }
 
     /**
-    * @Given /^the following accounts exist:$/
-    */
+     * @Given /^the following accounts exist:$/
+     */
     public function theFollowingAccountsExist(TableNode $table)
     {
         $this->phabric->insertFromTable('users', $table);
@@ -164,5 +170,37 @@ class FeatureContext extends BehatContext
     private function jsonResponse()
     {
         return json_decode($this->response, true);
+    }
+
+    /**
+     * @Given /^I have supplied the access token "([^"]*)"$/
+     */
+    public function iHaveSuppliedTheAccessToken($accessToken)
+    {
+        $this->postData['access_token'] = $accessToken;
+    }
+
+    /**
+     * @Given /^the following access tokens exist:$/
+     */
+    public function theFollowAccessTokensExist(TableNode $table)
+    {
+        $this->phabric->insertFromTable('access_tokens', $table);
+    }
+
+    /**
+     * @Given /^I should receive the address of the relevant report$/
+     */
+    public function iShouldReceiveTheAddressOfTheRelevantReport()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Given /^I have already submitted my PVT result$/
+     */
+    public function iHaveAlreadySubmittedMyPvtResult()
+    {
+        throw new PendingException();
     }
 }

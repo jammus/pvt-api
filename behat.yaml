@@ -15,3 +15,11 @@ default:
             primaryKey: 'id'
             nameCol: 'email'
             sequence: 'users_id_seq'
+          access_tokens:
+            tableName: 'access_tokens'
+            primaryKey: null
+            nameCol: null
+            nameTransformations:
+              user: 'user_id'
+            dataTransformations:
+              user_id: USERLOOKUP
