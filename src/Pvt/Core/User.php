@@ -31,4 +31,9 @@ class User
     {
         return $this->email;
     }
+
+    public function profileUrl()
+    {
+        return '/users/' . $this->id;
+    }
 }
