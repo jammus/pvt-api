@@ -7,8 +7,10 @@ use Doctrine\DBAL\DriverManager;
 use Symfony\Component\HttpFoundation\Request;
 
 use Pvt\DataAccess\SqlUserStore;
+use Pvt\DataAccess\SqlAccessTokenStore;
 use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Interactors\CreateUser;
+use Pvt\Interactors\ValidateAccessToken;
 
 $connection = DriverManager::getConnection(
     array(
@@ -21,15 +23,23 @@ $connection = DriverManager::getConnection(
     new \Doctrine\DBAL\Configuration()
 );
 
-$userstore = new SqlUserStore($connection);
-$createUser = new CreateUser($userstore);
+$userStore = new SqlUserStore($connection);
+$createUser = new CreateUser($userStore);
+
+$tokenStore = new SqlAccessTokenStore($connection);
+$validateAccessToken = new ValidateAccessToken($tokenStore, $userStore);
 
 $app = new \Silex\Application();
 $app['debug'] = true;
 
-$app->post('/report', function (Silex\Application $app) {
-    $response = errorResponse(401, 'Please supply a valid access token.');
-    return $app->json($response, $response['error']['code']);
+$app->post('/report', function (Silex\Application $app, Request $request) use ($validateAccessToken) {
+    $tokenString = $request->get('access_token');
+    $result = $validateAccessToken->validate($tokenString);
+    if (!$result->isOk()) {
+        $response = errorResponse(401, 'Please supply a valid access token.');
+        return $app->json($response, $response['error']['code']);
+    }
+    return $app->json(array(), 201);
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser) {

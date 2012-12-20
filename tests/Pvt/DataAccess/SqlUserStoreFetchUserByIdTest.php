@@ -20,7 +20,7 @@ class SqlUserStoreFetchUserByIdTest extends \PvtTest\PvtTestCase
         $this->store = new SqlUserStore($this->db);
     }
 
-    public function testFetchesAssociatedArray()
+    public function testFetchesAssociativeArray()
     {
         $this->db->shouldReceive('fetchAssoc')
             ->with(
