@@ -14,13 +14,16 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
 
     public function setup()
     {
-        $this->db = $this->getPartialMock('\Doctrine\DBAL\Connection[insert,lastInsertId]');
+        $this->db = $this->getMockBuilder('\Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->store = new SqlUserStore($this->db);
     }
 
     public function testInsertsDetails()
     {
-        $this->db->shouldReceive('insert')
+        $this->db->expects($this->once())
+            ->method('insert')
             ->with(
                 'users',
                 array(
@@ -28,33 +31,34 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
                     'email' => 'test@example.com',
                     'password' => '123456',
                 )
-            )
-            ->once();
+            );
         $this->store->create('Test User', 'test@example.com', '123456');
     }
 
     public function testReturnsIdOnSuccess()
     {
-        $this->db->shouldReceive('lastInsertId')
+        $this->db->expects($this->once())
+            ->method('lastInsertId')
             ->with('users_id_seq')
-            ->andReturn(1234)
-            ->once();
+            ->will($this->returnValue(1234));
         $id = $this->store->create('Test User', 'test@example.com', '123456');
         $this->assertEquals(1234, $id);
     }
 
     public function testThrowsUniqueConstraintViolationExceptionOnDuplicateEmail()
     {
-        $this->db->shouldReceive('insert')
-            ->andThrow(DBALException::driverExceptionDuringQuery(new \Exception('unique key violation', 23505), 'sql'));
+        $this->db->expects($this->once())
+            ->method('insert')
+            ->will($this->throwException(DBALException::driverExceptionDuringQuery(new \Exception('unique key violation', 23505), 'sql')));
         $this->setExpectedException('Pvt\Exceptions\UniqueConstraintViolationException');
         $this->store->create('Test User', 'test@example.com', '123456');
     }
 
     public function testRethrowsOtherDbalExceptions()
     {
-        $this->db->shouldReceive('insert')
-            ->andThrow(new DBALException());
+        $this->db->expects($this->once())
+            ->method('insert')
+            ->will($this->throwException(new DBALException()));
         $this->setExpectedException('Doctrine\DBAL\DBALException');
         $this->store->create('Test User', 'test@example.com', '123456');
     }

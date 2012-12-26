@@ -14,7 +14,9 @@ class CreateUserTest extends \PvtTest\PvtTestCase
     public function setup()
     {
         parent::setup();
-        $this->userstore = $this->getPartialMock('Pvt\DataAccess\UserStore[create,fetchById]');
+        $this->userstore = $this->getMockBuilder('Pvt\DataAccess\UserStore')
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->interactor = new CreateUser($this->userstore);
     }
 
@@ -68,10 +70,11 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $name = 'Test User';
         $email = 'test@example.com';
         $password = 'sufficiently long password';
-        $this->userstore->shouldReceive('create')
-            ->with($name, $email, $password)
-            ->once();
-        $this->userstore->shouldReceive('fetchById')->andReturn(new User('', '', '')); // required as it otherwise returns a mock object which confuses the result class
+
+        $this->userstore->expects($this->once())
+            ->method('create')
+            ->with($name, $email, $password);
+
         $this->interactor->execute($name, $email, $password);
     }
 
@@ -81,21 +84,25 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $email = 'test@example.com';
         $password = 'sufficiently long password';
         $user = new User(1234, $name, $email);
-        $this->userstore->shouldReceive('create')
-            ->andReturn(1234)
-            ->once();
-        $this->userstore->shouldReceive('fetchById')
+
+        $this->userstore->expects($this->once())
+            ->method('create')
+            ->will($this->returnValue(1234));
+
+        $this->userstore->expects($this->once())
+            ->method('fetchById')
             ->with(1234)
-            ->andReturn($user)
-            ->once();
+            ->will($this->returnValue($user));
+
         $result = $this->interactor->execute($name, $email, $password);
         $this->assertEquals($user, $result->user());
     }
 
     public function testThrowsDuplicateUserExceptionOnUniqueConstraint()
     {
-        $this->userstore->shouldReceive('create')
-            ->andThrow(new UniqueConstraintViolationException());
+        $this->userstore->expects($this->any())
+            ->method('create')
+            ->will($this->throwException(new UniqueConstraintViolationException()));
         $this->setExpectedException('Pvt\Exceptions\DuplicateUserException');
         $this->interactor->execute('blah', 'blah@blah.com', 'blahblah');
     }

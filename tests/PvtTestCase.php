@@ -8,11 +8,4 @@ class PvtTestCase extends \PHPUnit_Framework_TestCase
     {
         \Mockery::close();
     }
-
-    protected function getPartialMock($definition)
-    {
-        $mock = \Mockery::mock($definition);
-        $mock->shouldIgnoreMissing();
-        return $mock;
-    }
 }
