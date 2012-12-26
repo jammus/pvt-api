@@ -4,5 +4,17 @@ namespace Pvt\DataAccess;
 
 interface AccessTokenStore
 {
-    function fetchByTokenString($token);
+    /**
+     * @param string $tokenString
+     *
+     * @return null|\Pvt\Core\AccessToken
+     */
+    function fetchByTokenString($tokenString);
+
+    /**
+     * @param int $userId
+     *
+     * @return null|\Pvt\Core\AccessToken
+     */
+    function fetchByUserId($userId);
 }

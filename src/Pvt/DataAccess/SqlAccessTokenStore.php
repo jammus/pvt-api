@@ -10,6 +10,9 @@ class SqlAccessTokenStore implements AccessTokenStore
 {
     private $db;
 
+    /**
+     * @param \Doctrine\DBAL\Connection Database connection
+     */
     public function __construct(Connection $db)
     {
         $this->db = $db;

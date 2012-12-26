@@ -17,21 +17,33 @@ class User
         $this->email = $email;
     }
 
+    /**
+     * @return int
+     */
     public function id()
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function name()
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function email()
     {
         return $this->email;
     }
 
+    /**
+     * @return string Relative url of user's profile
+     */
     public function profileUrl()
     {
         return '/users/' . $this->id;

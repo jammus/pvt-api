@@ -7,6 +7,9 @@ use Pvt\DataAccess\UserStore;
 use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Exceptions\UniqueConstraintViolationException;
 
+/**
+ * Create a new user record
+ */
 class CreateUser
 {
     private $userstore;
@@ -16,6 +19,17 @@ class CreateUser
         $this->userstore = $userstore;
     }
 
+    /**
+     *
+     * @param string $name User's full name.
+     * @param string $email User's email address.
+     * @param string $password User's desired plaintext password
+     *
+     * @throws DuplicateUserException if a user with supplied email address already
+     * exists.
+     *
+     * @return CreateUserResult
+     */
     public function execute($name, $email, $password)
     {
         $password = trim($password);

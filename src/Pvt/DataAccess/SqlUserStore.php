@@ -12,11 +12,17 @@ class SqlUserStore implements UserStore
 {
     private $db;
 
+    /**
+     * @param \Doctrine\DBAL\Connection Database connection
+     */
     public function __construct(Connection $db)
     {
         $this->db = $db;
     }
 
+    /**
+     * @throws UniqueConstraintViolationException if duplicate user exists in data store.
+     */
     public function create($name, $email, $password)
     {
         try {
