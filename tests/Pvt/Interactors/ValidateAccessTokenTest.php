@@ -23,19 +23,19 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
 
     public function testReturnsValidateAccessTokenResult()
     {
-        $result = $this->interactor->validate('access_token');
+        $result = $this->interactor->execute('access_token');
         $this->assertTrue($result instanceof ValidateAccessTokenResult);
     }
 
     public function testResultIncludesInvalidIfNoneSupplied()
     {
-        $result = $this->interactor->validate('');
+        $result = $this->interactor->execute('');
         $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
         
-        $result = $this->interactor->validate('       ');
+        $result = $this->interactor->execute('       ');
         $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
         
-        $result = $this->interactor->validate(null);
+        $result = $this->interactor->execute(null);
         $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
     }
 
@@ -46,7 +46,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->with('access_token')
             ->will($this->returnValue(null));
 
-        $result = $this->interactor->validate('access_token');
+        $result = $this->interactor->execute('access_token');
 
         $this->assertTrue($result->hasError(ValidateAccessTokenResult::FALSE_OR_EXPIRED));
     }
@@ -56,7 +56,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
         $this->accessTokenStore->expects($this->never())
             ->method('fetchByTokenString');
 
-        $result = $this->interactor->validate('');
+        $result = $this->interactor->execute('');
     }
 
     public function testLooksUpUserByAssociatedIdWhenFound()
@@ -71,7 +71,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->method('fetchById')
             ->with($this->equalTo(10001));
 
-        $result = $this->interactor->validate('access_token');
+        $result = $this->interactor->execute('access_token');
     }
 
     public function testIncludesUserAndAccesTokenInResultWhenFound()
@@ -87,7 +87,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->method('fetchById')
             ->will($this->returnValue($user));
 
-        $result = $this->interactor->validate('access_token');
+        $result = $this->interactor->execute('access_token');
 
         $this->assertTrue($result->isOk());
         $this->assertEquals($user, $result->user(), 'Missing or unexpected user');
@@ -103,6 +103,6 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
         $this->accessTokenStore->expects($this->never())
             ->method('fetchById');
 
-        $result = $this->interactor->validate('access_token');
+        $result = $this->interactor->execute('access_token');
     }
 }

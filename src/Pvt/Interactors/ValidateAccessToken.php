@@ -17,7 +17,7 @@ class ValidateAccessToken
         $this->userStore = $userStore;
     }
 
-    public function validate($tokenString)
+    public function execute($tokenString)
     {
         $errors = array();
         $user = null;

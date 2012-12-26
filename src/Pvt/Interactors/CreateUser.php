@@ -16,7 +16,7 @@ class CreateUser
         $this->userstore = $userstore;
     }
 
-    public function create($name, $email, $password)
+    public function execute($name, $email, $password)
     {
         $password = trim($password);
         $name = trim($name);

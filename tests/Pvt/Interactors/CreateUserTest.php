@@ -20,46 +20,46 @@ class CreateUserTest extends \PvtTest\PvtTestCase
 
     public function testReturnsInvalidEmailResultWhenEmailMalformed()
     {
-        $result = $this->interactor->create('name', 'email', 'password');
+        $result = $this->interactor->execute('name', 'email', 'password');
         $this->assertTrue($result->hasError(CreateUserResult::INVALID_EMAIL));
 
-        $result = $this->interactor->create('name', 'email@somethingcom', 'password');
+        $result = $this->interactor->execute('name', 'email@somethingcom', 'password');
         $this->assertTrue($result->hasError(CreateUserResult::INVALID_EMAIL));
 
-        $result = $this->interactor->create('name', 'emailsomethingcom.www', 'password');
+        $result = $this->interactor->execute('name', 'emailsomethingcom.www', 'password');
         $this->assertTrue($result->hasError(CreateUserResult::INVALID_EMAIL));
     }
 
     public function testReturnsInvalidPasswordWhenTooShort()
     {
-        $result = $this->interactor->create('name', 'test@example.com', '');
+        $result = $this->interactor->execute('name', 'test@example.com', '');
         $this->assertTrue($result->hasError(CreateUserResult::PASSWORD_TOO_SHORT));
 
-        $result = $this->interactor->create('name', 'test@example.com', '1           ');
+        $result = $this->interactor->execute('name', 'test@example.com', '1           ');
         $this->assertTrue($result->hasError(CreateUserResult::PASSWORD_TOO_SHORT));
     }
 
     public function testReturnsInvalidPasswordWhenBlankOrMissing()
     {
-        $result = $this->interactor->create('name', 'test@example.com', '');
+        $result = $this->interactor->execute('name', 'test@example.com', '');
         $this->assertTrue($result->hasError(CreateUserResult::PASSWORD_TOO_SHORT));
 
-        $result = $this->interactor->create('name', 'test@example.com', '            ');
+        $result = $this->interactor->execute('name', 'test@example.com', '            ');
         $this->assertTrue($result->hasError(CreateUserResult::PASSWORD_TOO_SHORT));
 
-        $result = $this->interactor->create('name', 'test@example.com', null);
+        $result = $this->interactor->execute('name', 'test@example.com', null);
         $this->assertTrue($result->hasError(CreateUserResult::PASSWORD_TOO_SHORT));
     }
 
     public function testReturnsMissingNameWhenOmitted()
     {
-        $result = $this->interactor->create(' ', 'test@example.com', 'balalalal');
+        $result = $this->interactor->execute(' ', 'test@example.com', 'balalalal');
         $this->assertTrue($result->hasError(CreateUserResult::MISSING_NAME));
 
-        $result = $this->interactor->create('', 'test@example.com', 'balalalal');
+        $result = $this->interactor->execute('', 'test@example.com', 'balalalal');
         $this->assertTrue($result->hasError(CreateUserResult::MISSING_NAME));
 
-        $result = $this->interactor->create(null, 'test@example.com', 'balalalal');
+        $result = $this->interactor->execute(null, 'test@example.com', 'balalalal');
         $this->assertTrue($result->hasError(CreateUserResult::MISSING_NAME));
     }
 
@@ -72,7 +72,7 @@ class CreateUserTest extends \PvtTest\PvtTestCase
             ->with($name, $email, $password)
             ->once();
         $this->userstore->shouldReceive('fetchById')->andReturn(new User('', '', '')); // required as it otherwise returns a mock object which confuses the result class
-        $this->interactor->create($name, $email, $password);
+        $this->interactor->execute($name, $email, $password);
     }
 
     public function testFetchesAndReturnsUserOnSuccess()
@@ -88,7 +88,7 @@ class CreateUserTest extends \PvtTest\PvtTestCase
             ->with(1234)
             ->andReturn($user)
             ->once();
-        $result = $this->interactor->create($name, $email, $password);
+        $result = $this->interactor->execute($name, $email, $password);
         $this->assertEquals($user, $result->user());
     }
 
@@ -97,6 +97,6 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $this->userstore->shouldReceive('create')
             ->andThrow(new UniqueConstraintViolationException());
         $this->setExpectedException('Pvt\Exceptions\DuplicateUserException');
-        $this->interactor->create('blah', 'blah@blah.com', 'blahblah');
+        $this->interactor->execute('blah', 'blah@blah.com', 'blahblah');
     }
 }
