@@ -8,7 +8,7 @@
          verbose="true">
   <testsuites>
     <testsuite name="pvt-api">
-      <directory suffix="Test.php">tests</directory>
+        <directory>./tests</directory>
     </testsuite>
   </testsuites>
 
