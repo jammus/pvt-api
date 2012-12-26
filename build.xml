@@ -24,7 +24,7 @@
   <if>
     <available file="${basedir}/vendor" />
     <then>
-      <exec executable="composer" failonerror="true">
+      <exec executable="composer" failonerror="false">
         <arg value="update" />
         <arg value="--dev" />
       </exec>
