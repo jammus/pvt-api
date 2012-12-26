@@ -20,7 +20,7 @@
   <mkdir dir="${basedir}/build/pdepend"/>
  </target>
 
- <target name="composer" description="Install or updates dependencies">
+ <target name="dependencies" description="Install or updates dependencies">
   <if>
     <available file="${basedir}/vendor" />
     <then>
@@ -111,5 +111,5 @@
   </exec>
  </target>
 
- <target name="build" depends="clean,parallelTasks,phpunit,phpcb"/>
+ <target name="build" depends="clean,dependencies,parallelTasks,phpunit,phpcb"/>
 </project>
