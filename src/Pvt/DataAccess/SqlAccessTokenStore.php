@@ -30,4 +30,8 @@ class SqlAccessTokenStore implements AccessTokenStore
             $result['access_token']
         );
     }
+
+    public function fetchByUserId($userId)
+    {
+    }
 }
