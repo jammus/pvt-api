@@ -9,12 +9,12 @@ interface AccessTokenStore
      *
      * @return null|\Pvt\Core\AccessToken
      */
-    function fetchByTokenString($tokenString);
+    public function fetchByTokenString($tokenString);
 
     /**
      * @param int $userId
      *
      * @return null|\Pvt\Core\AccessToken
      */
-    function fetchByUserId($userId);
+    public function fetchByUserId($userId);
 }

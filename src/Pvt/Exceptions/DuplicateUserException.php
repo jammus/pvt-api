@@ -2,4 +2,7 @@
 
 namespace Pvt\Exceptions;
 
-class DuplicateUserException extends \Exception { }
+class DuplicateUserException extends \Exception
+{
+    // nop
+}

@@ -2,4 +2,7 @@
 
 namespace Pvt\Exceptions;
 
-class UniqueConstraintViolationException extends \Exception { }
+class UniqueConstraintViolationException extends \Exception
+{
+    // nop
+}

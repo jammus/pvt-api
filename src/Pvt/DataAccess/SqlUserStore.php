@@ -34,8 +34,7 @@ class SqlUserStore implements UserStore
                     'password' => $password,
                 )
             );
-        }
-        catch (DBALException $e) {
+        } catch (DBALException $e) {
             $previous = $e->getPrevious();
             if (isset($previous) && $previous->getCode() == 23505) {
                 throw new UniqueConstraintViolationException("Could not insert duplicate row: $name, $email, ********");
