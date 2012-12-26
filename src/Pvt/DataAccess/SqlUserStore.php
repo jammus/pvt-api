@@ -26,7 +26,7 @@ class SqlUserStore implements UserStore
     public function create($name, $email, $password)
     {
         try {
-            $result = $this->db->insert(
+            $this->db->insert(
                 'users',
                 array(
                     'name' => $name,
