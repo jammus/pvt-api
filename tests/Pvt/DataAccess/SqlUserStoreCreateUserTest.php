@@ -30,7 +30,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
                 )
             )
             ->once();
-        $this->store->createUser('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', '123456');
     }
 
     public function testReturnsIdOnSuccess()
@@ -39,7 +39,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
             ->with('users_id_seq')
             ->andReturn(1234)
             ->once();
-        $id = $this->store->createUser('Test User', 'test@example.com', '123456');
+        $id = $this->store->create('Test User', 'test@example.com', '123456');
         $this->assertEquals(1234, $id);
     }
 
@@ -48,7 +48,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
         $this->db->shouldReceive('insert')
             ->andThrow(DBALException::driverExceptionDuringQuery(new \Exception('unique key violation', 23505), 'sql'));
         $this->setExpectedException('Pvt\Exceptions\UniqueConstraintViolationException');
-        $this->store->createUser('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', '123456');
     }
 
     public function testRethrowsOtherDbalExceptions()
@@ -56,6 +56,6 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
         $this->db->shouldReceive('insert')
             ->andThrow(new DBALException());
         $this->setExpectedException('Doctrine\DBAL\DBALException');
-        $this->store->createUser('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', '123456');
     }
 }

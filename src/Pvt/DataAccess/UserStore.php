@@ -4,6 +4,6 @@ namespace Pvt\DataAccess;
 
 interface UserStore
 {
-    function createUser($name, $email, $password);
-    function fetchUserById($id);
+    function create($name, $email, $password);
+    function fetchById($id);
 }

@@ -28,7 +28,7 @@ class SqlUserStoreFetchUserByIdTest extends \PvtTest\PvtTestCase
                 array('id' => 1234)
             )
             ->once();
-        $this->store->fetchUserById(1234);
+        $this->store->fetchById(1234);
     }
 
     public function testReturnsUserObject()
@@ -46,6 +46,6 @@ class SqlUserStoreFetchUserByIdTest extends \PvtTest\PvtTestCase
             'Test User', 
             'test@example.com'
         );
-        $this->assertEquals($expectedUser, $this->store->fetchUserbyId(1234));
+        $this->assertEquals($expectedUser, $this->store->fetchById(1234));
     }
 }

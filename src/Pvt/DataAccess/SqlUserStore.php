@@ -17,7 +17,7 @@ class SqlUserStore implements UserStore
         $this->db = $db;
     }
 
-    public function createUser($name, $email, $password)
+    public function create($name, $email, $password)
     {
         try {
             $result = $this->db->insert(
@@ -39,7 +39,7 @@ class SqlUserStore implements UserStore
         return $this->db->lastInsertId('users_id_seq');
     }
 
-    public function fetchUserById($id)
+    public function fetchById($id)
     {
         $result = $this->db->fetchAssoc(
             'SELECT * FROM users WHERE id = :id',

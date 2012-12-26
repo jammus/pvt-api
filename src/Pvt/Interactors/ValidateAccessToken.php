@@ -35,7 +35,7 @@ class ValidateAccessToken
             }
         }
         if (empty($errors)) {
-            $user = $this->userStore->fetchUserById($accessToken->userId());
+            $user = $this->userStore->fetchById($accessToken->userId());
         }
         return new ValidateAccessTokenResult($user, $accessToken, $errors);
     }

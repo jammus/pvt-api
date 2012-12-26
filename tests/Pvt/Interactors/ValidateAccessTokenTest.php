@@ -68,7 +68,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->will($this->returnValue($accessToken));
 
         $this->userStore->expects($this->once())
-            ->method('fetchUserById')
+            ->method('fetchById')
             ->with($this->equalTo(10001));
 
         $result = $this->interactor->validate('access_token');
@@ -84,7 +84,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->will($this->returnValue($accessToken));
 
         $this->userStore->expects($this->once())
-            ->method('fetchUserById')
+            ->method('fetchById')
             ->will($this->returnValue($user));
 
         $result = $this->interactor->validate('access_token');
@@ -101,7 +101,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
             ->will($this->returnValue(null));
 
         $this->accessTokenStore->expects($this->never())
-            ->method('fetchUserById');
+            ->method('fetchById');
 
         $result = $this->interactor->validate('access_token');
     }

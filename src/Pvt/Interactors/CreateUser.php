@@ -27,12 +27,12 @@ class CreateUser
             return new CreateUserResult(null, $errors);
         }
         try {
-            $id = $this->userstore->createUser($name, $email, $password);
+            $id = $this->userstore->create($name, $email, $password);
         }
         catch (UniqueConstraintViolationException $e) {
             throw new DuplicateUserException('Cannot create user with email: ' . $email);
         }
-        $user = $this->userstore->fetchUserById($id);
+        $user = $this->userstore->fetchById($id);
         return new CreateUserResult($user);
     }
 

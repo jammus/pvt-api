@@ -14,7 +14,7 @@ class CreateUserTest extends \PvtTest\PvtTestCase
     public function setup()
     {
         parent::setup();
-        $this->userstore = $this->getPartialMock('Pvt\DataAccess\UserStore[createUser,fetchUserById]');
+        $this->userstore = $this->getPartialMock('Pvt\DataAccess\UserStore[create,fetchById]');
         $this->interactor = new CreateUser($this->userstore);
     }
 
@@ -68,10 +68,10 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $name = 'Test User';
         $email = 'test@example.com';
         $password = 'sufficiently long password';
-        $this->userstore->shouldReceive('createUser')
+        $this->userstore->shouldReceive('create')
             ->with($name, $email, $password)
             ->once();
-        $this->userstore->shouldReceive('fetchUserById')->andReturn(new User('', '', '')); // required as it otherwise returns a mock object which confuses the result class
+        $this->userstore->shouldReceive('fetchById')->andReturn(new User('', '', '')); // required as it otherwise returns a mock object which confuses the result class
         $this->interactor->create($name, $email, $password);
     }
 
@@ -81,10 +81,10 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $email = 'test@example.com';
         $password = 'sufficiently long password';
         $user = new User(1234, $name, $email);
-        $this->userstore->shouldReceive('createUser')
+        $this->userstore->shouldReceive('create')
             ->andReturn(1234)
             ->once();
-        $this->userstore->shouldReceive('fetchUserById')
+        $this->userstore->shouldReceive('fetchById')
             ->with(1234)
             ->andReturn($user)
             ->once();
@@ -94,7 +94,7 @@ class CreateUserTest extends \PvtTest\PvtTestCase
 
     public function testThrowsDuplicateUserExceptionOnUniqueConstraint()
     {
-        $this->userstore->shouldReceive('createUser')
+        $this->userstore->shouldReceive('create')
             ->andThrow(new UniqueConstraintViolationException());
         $this->setExpectedException('Pvt\Exceptions\DuplicateUserException');
         $this->interactor->create('blah', 'blah@blah.com', 'blahblah');
