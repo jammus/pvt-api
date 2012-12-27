@@ -18,7 +18,7 @@ require_once 'PHPUnit/Framework/Assert/Functions.php';
  */
 class FeatureContext extends BehatContext
 {
-    private $BASE_URL = "http://api.pvt/";
+    private $BASE_URL = "http://api.pvt";
 
     private $postData;
 
@@ -79,7 +79,7 @@ class FeatureContext extends BehatContext
      */
     public function iHaveNotSuppliedMyCredentials()
     {
-
+        // Do nothing
     }
 
     /**
@@ -87,13 +87,12 @@ class FeatureContext extends BehatContext
      */
     public function iSubmitMyPvtResult()
     {
-        $this->url = $this->BASE_URL . 'report';
-        $this->submitForm();
+        $this->submitForm('/report');
     }
 
-    private function submitForm()
+    private function submitForm($url)
     {
-        $this->ch = curl_init($this->url);
+        $this->ch = curl_init($this->BASE_URL . $url);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_POST, 1);
         curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postData);
@@ -114,8 +113,7 @@ class FeatureContext extends BehatContext
      */
     public function iAttemptToCreateANewAccount()
     {
-        $this->url = $this->BASE_URL . 'users';
-        $this->submitForm();
+        $this->submitForm('/users');
     }
 
     /**
@@ -141,7 +139,7 @@ class FeatureContext extends BehatContext
     /**
      * @Given /^I have supplied "([^"]*)", "([^"]*)" and "([^"]*)"$/
      */
-    public function iHaveSuppliedUserExampleComAnd($email, $password, $name)
+    public function iHaveSupplied($email, $password, $name)
     {
         $this->postData = array(
             'email' => $email,
@@ -189,17 +187,45 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Given /^I should receive the address of the relevant report$/
+     * @Given /^I have already submitted my PVT result$/
      */
-    public function iShouldReceiveTheAddressOfTheRelevantReport()
+    public function iHaveAlreadySubmittedMyPvtResult()
     {
         throw new PendingException();
     }
 
     /**
-     * @Given /^I have already submitted my PVT result$/
+     * @Given /^I (have submitted|submit|resubmit) the following PVT result:$/
      */
-    public function iHaveAlreadySubmittedMyPvtResult()
+    public function iHaveSubmittedTheFollowingPvtResult($tense, TableNode $table)
+    {
+        $reportData = $table->getHash();
+        $this->postData['date'] = $reportData[0]['date'];
+        $this->postData['avgRt'] = $reportData[0]['average rt'];
+        $this->postData['errors'] = $reportData[0]['errors'];
+        $this->submitForm('/report');
+    }
+
+    /**
+     * @Given /^I should be directed to the report at "([^"]*)"$/
+     */
+    public function iShouldBeDirectedToTheReportAt($arg1)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @When /^I view the PVT report$/
+     */
+    public function iViewThePvtReport()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then /^I should see the report contains:$/
+     */
+    public function iShouldSeeTheReportContains(TableNode $table)
     {
         throw new PendingException();
     }

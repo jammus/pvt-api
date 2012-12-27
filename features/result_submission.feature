@@ -23,9 +23,11 @@ Feature: Result submission
             | user              | access_token  |
             | test@example.com  | abcdefgh      |
         And I have supplied the access token "abcdefgh"
-        When I submit my PVT result
+        When I submit the following PVT result:
+            | date                | average rt    | errors    |
+            | 1234567890          | 401.05        | 2         |
         Then I should get a 201 response code
-        And I should receive the address of the relevant report
+        And I should be directed to the report at "/user/(d+)/report/1234567890"
 
     Scenario: Resubmission
         Given the following accounts exist:
@@ -35,6 +37,27 @@ Feature: Result submission
             | user              | access_token  |
             | test@example.com  | abcdefgh      |
         And I have supplied the access token "abcdefgh"
-        And I have already submitted my PVT result
+        And I have submitted the following PVT result:
+            | date              | average rt    | errors    |
+            | 1234567890        | 401.05        | 2         |
+        When I resubmit the following PVT result:
+            | date              | average rt    | errors    |
+            | 1234567890        | 401.05        | 2         |
         Then I should get a 301 response code
-        And I should receive the address of the relevant report
+        And I should be directed to the report at "/user/(d+)/report/1234567890"
+
+    Scenario: Viewing submitted report
+        Given the following accounts exist:
+            | email             | password  | name      |
+            | test@example.com  | ********  | Test User |
+        And the following access tokens exist:
+            | user              | access_token  |
+            | test@example.com  | abcdefgh      |
+        And I have supplied the access token "abcdefgh"
+        And I have submitted the following PVT result:
+            | date              | average rt    | errors    |
+            | 1234567890        | 401.05        | 2         |
+        When I view the PVT report
+        Then I should see the report contains:
+            | date              | average rt    | errors    |
+            | 1234567890        | 401.05        | 2         |
