@@ -2,6 +2,8 @@
 
 namespace Pvt\DataAccess;
 
+use Pvt\Core\Password;
+
 interface UserStore
 {
     /**
@@ -10,7 +12,7 @@ interface UserStore
      * @param string $password User's plaintext password
      * @return int New user's id on success.
      */
-    public function create($name, $email, $password);
+    public function create($name, $email, Password $password);
 
     /**
      * @param int $id User's id.

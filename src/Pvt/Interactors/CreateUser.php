@@ -2,6 +2,7 @@
 
 namespace Pvt\Interactors;
 
+use Pvt\Core\Password;
 use Pvt\Core\User;
 use Pvt\DataAccess\UserStore;
 use Pvt\Exceptions\DuplicateUserException;
@@ -42,7 +43,7 @@ class CreateUser
         }
 
         try {
-            $id = $this->userstore->create($name, $email, $password);
+            $id = $this->userstore->create($name, $email, Password::fromPlainText($password));
         } catch (UniqueConstraintViolationException $e) {
             throw new DuplicateUserException('Cannot create user with email: ' . $email);
         }

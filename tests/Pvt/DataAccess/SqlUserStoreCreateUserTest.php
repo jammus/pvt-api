@@ -4,6 +4,8 @@ namespace PvtTest\DataAccess;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+
+use Pvt\Core\Password;
 use Pvt\DataAccess\SqlUserStore;
 
 class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
@@ -32,7 +34,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
                     'password' => '123456',
                 )
             );
-        $this->store->create('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', new TestPassword('123456'));
     }
 
     public function testReturnsIdOnSuccess()
@@ -41,7 +43,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
             ->method('lastInsertId')
             ->with('users_id_seq')
             ->will($this->returnValue(1234));
-        $id = $this->store->create('Test User', 'test@example.com', '123456');
+        $id = $this->store->create('Test User', 'test@example.com', new TestPassword('123456'));
         $this->assertEquals(1234, $id);
     }
 
@@ -51,7 +53,7 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
             ->method('insert')
             ->will($this->throwException(DBALException::driverExceptionDuringQuery(new \Exception('unique key violation', 23505), 'sql')));
         $this->setExpectedException('Pvt\Exceptions\UniqueConstraintViolationException');
-        $this->store->create('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', new TestPassword('123456'));
     }
 
     public function testRethrowsOtherDbalExceptions()
@@ -60,6 +62,21 @@ class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
             ->method('insert')
             ->will($this->throwException(new DBALException()));
         $this->setExpectedException('Doctrine\DBAL\DBALException');
-        $this->store->create('Test User', 'test@example.com', '123456');
+        $this->store->create('Test User', 'test@example.com', new TestPassword('123456'));
+    }
+}
+
+class TestPassword extends Password
+{
+    private $hash;
+
+    public function __construct($hash)
+    {
+        $this->hash = $hash;
+    }
+
+    public function hash()
+    {
+        return $this->hash;
     }
 }

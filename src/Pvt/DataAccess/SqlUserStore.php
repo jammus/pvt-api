@@ -5,6 +5,7 @@ namespace Pvt\DataAccess;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Connection;
 
+use Pvt\Core\Password;
 use Pvt\Core\User;
 use Pvt\Exceptions\UniqueConstraintViolationException;
 
@@ -23,7 +24,7 @@ class SqlUserStore implements UserStore
     /**
      * @throws UniqueConstraintViolationException if duplicate user exists in data store.
      */
-    public function create($name, $email, $password)
+    public function create($name, $email, Password $password)
     {
         try {
             $this->db->insert(
@@ -31,7 +32,7 @@ class SqlUserStore implements UserStore
                 array(
                     'name' => $name,
                     'email' => $email,
-                    'password' => $password,
+                    'password' => $password->hash(),
                 )
             );
         } catch (DBALException $e) {

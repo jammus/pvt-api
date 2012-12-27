@@ -73,7 +73,7 @@ class CreateUserTest extends \PvtTest\PvtTestCase
 
         $this->userstore->expects($this->once())
             ->method('create')
-            ->with($name, $email, $password);
+            ->with($name, $email, $this->isInstanceOf('\Pvt\Core\Password'));
 
         $this->interactor->execute($name, $email, $password);
     }
