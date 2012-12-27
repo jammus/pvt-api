@@ -5,6 +5,7 @@ namespace PvtTest\DataAccess;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
+use Pvt\Core\Password;
 use Pvt\Core\User;
 use Pvt\DataAccess\SqlUserStore;
 
@@ -42,13 +43,14 @@ class SqlUserStoreFetchUserByIdTest extends \PvtTest\PvtTestCase
                     'id' => 1234,
                     'name' => 'Test User',
                     'email' => 'test@example.com',
-                    'password' => 'password'
+                    'password' => 'passwordhash'
                 )
             ));
         $expectedUser = new User(
             1234,
             'Test User', 
-            'test@example.com'
+            'test@example.com',
+            Password::fromHash('passwordhash')
         );
         $this->assertEquals($expectedUser, $this->store->fetchById(1234));
     }

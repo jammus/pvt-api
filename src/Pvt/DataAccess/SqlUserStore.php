@@ -56,7 +56,8 @@ class SqlUserStore implements UserStore
         return new User(
             $result['id'],
             $result['name'],
-            $result['email']
+            $result['email'],
+            Password::fromHash($result['password'])
         );
     }
 
