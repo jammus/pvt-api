@@ -229,4 +229,23 @@ class FeatureContext extends BehatContext
     {
         throw new PendingException();
     }
+
+    /**
+     * @Given /^I have supplied "([^"]*)" and "([^"]*)"$/
+     */
+    public function iHaveSuppliedAnd($email, $password)
+    {
+        $this->postData = array(
+            'email' => $email,
+            'password' => $password,
+        );
+    }
+
+    /**
+     * @When /^I attempt to authenticate myself$/
+     */
+    public function iAttemptToAuthenticateMyself()
+    {
+        $this->submitForm('/login');
+    }
 }
