@@ -42,6 +42,7 @@ class SqlUserStore implements UserStore
             }
             throw $e;
         }
+
         return $this->db->lastInsertId('users_id_seq');
     }
 
@@ -51,10 +52,15 @@ class SqlUserStore implements UserStore
             'SELECT * FROM users WHERE id = :id',
             array('id' => $id)
         );
+
         return new User(
             $result['id'],
             $result['name'],
             $result['email']
         );
+    }
+
+    public function fetchByEmail($email)
+    {
     }
 }

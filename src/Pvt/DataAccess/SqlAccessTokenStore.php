@@ -34,4 +34,8 @@ class SqlAccessTokenStore implements AccessTokenStore
     public function fetchByUserId($userId)
     {
     }
+
+    public function save(AccessToken $accessToken)
+    {
+    }
 }

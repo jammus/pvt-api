@@ -10,11 +10,14 @@ class User
 
     private $email;
 
-    public function __construct($id, $name, $email)
+    private $password;
+
+    public function __construct($id, $name, $email, Password $password = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
+        $this->password = $password;
     }
 
     /**
@@ -47,5 +50,13 @@ class User
     public function profileUrl()
     {
         return '/users/' . $this->id;
+    }
+
+    public function checkPassword($password)
+    {
+        if ($this->password === null) {
+            return false;
+        }
+        return $this->password->matches($password);
     }
 }

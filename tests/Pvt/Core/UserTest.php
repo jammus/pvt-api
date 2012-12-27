@@ -2,6 +2,7 @@
 
 namespace PvtTest\Core;
 
+use Pvt\Core\Password;
 use Pvt\Core\User;
 
 class UserTest extends \PvtTest\PvtTestCase
@@ -18,5 +19,23 @@ class UserTest extends \PvtTest\PvtTestCase
     {
         $user = new User(1234, 'name', 'name@example.com');
         $this->assertEquals('/users/1234', $user->profileUrl());
+    }
+
+    public function testCheckPasswordIsFalseByDefault()
+    {
+        $user = new User(1234, 'name', 'name@example.com');
+        $this->assertFalse($user->checkPassword('password'));
+    }
+
+    public function testCheckPasswordTrueWhenCorrect()
+    {
+        $user = new User(1234, 'name', 'name@example.com', Password::fromPlainText('password'));
+        $this->assertTrue($user->checkPassword('password'));
+    }
+
+    public function testCheckPasswordFailsWhenDifferent()
+    {
+        $user = new User(1234, 'name', 'name@example.com', Password::fromPlainText('password'));
+        $this->assertFalse($user->checkPassword('pissword'));
     }
 }
