@@ -46,6 +46,9 @@ class PasswordTest extends \PvtTest\PvtTestCase
     {
         $password = Password::fromPlainText('pissword');
         $this->assertFalse($password->matches('password'));
+
+        $password = Password::fromPlainText('password');
+        $this->assertFalse($password->matches('pissword'));
     }
 
     public function testPasswordDoesNotMatchRandomHash()

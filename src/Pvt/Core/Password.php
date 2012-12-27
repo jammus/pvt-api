@@ -35,6 +35,6 @@ class Password
     public function matches($password)
     {
         $hasher = new PasswordHash(10, false);
-        return $hasher->CheckPassword('password', $this->hash);
+        return $hasher->CheckPassword($password, $this->hash);
     }
 }
