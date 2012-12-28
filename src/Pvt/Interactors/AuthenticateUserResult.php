@@ -9,6 +9,8 @@ class AuthenticateUserResult extends Result
 {
     const INVALID_EMAIL = -1;
     const INVALID_PASSWORD = -2;
+    const INVALID_ACCESS_TOKEN = -3;
+    const FALSE_OR_EXPIRED_ACCESS_TOKEN = -4;
 
     private $user;
 

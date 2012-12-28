@@ -9,7 +9,7 @@ use Pvt\DataAccess\UserStore;
  * Exchange a access token string for full details and the associated
  * user
  */
-class ValidateAccessToken
+class AuthenticateUserWithAccessToken
 {
     private $tokenStore;
 
@@ -39,13 +39,13 @@ class ValidateAccessToken
         $tokenString = trim($tokenString);
 
         if (mb_strlen($tokenString) === 0) {
-            $errors[] = ValidateAccessTokenResult::INVALID;
+            $errors[] = AuthenticateUserResult::INVALID_ACCESS_TOKEN;
         }
 
         if (empty($errors)) {
             $accessToken = $this->tokenStore->fetchByTokenString($tokenString);
             if ($accessToken === null) {
-                $errors[] = ValidateAccessTokenResult::FALSE_OR_EXPIRED;
+                $errors[] = AuthenticateUserResult::FALSE_OR_EXPIRED_ACCESS_TOKEN;
             }
         }
 
@@ -53,6 +53,6 @@ class ValidateAccessToken
             $user = $this->userStore->fetchById($accessToken->userId());
         }
 
-        return new ValidateAccessTokenResult($user, $accessToken, $errors);
+        return new AuthenticateUserResult($user, $accessToken, $errors);
     }
 }

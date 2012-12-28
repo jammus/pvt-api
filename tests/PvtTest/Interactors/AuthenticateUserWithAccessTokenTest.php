@@ -4,10 +4,10 @@ namespace PvtTest\Interactors;
 
 use Pvt\Core\AccessToken;
 use Pvt\Core\User;
-use Pvt\Interactors\ValidateAccessToken;
-use Pvt\Interactors\ValidateAccessTokenResult;
+use Pvt\Interactors\AuthenticateUserWithAccessToken;
+use Pvt\Interactors\AuthenticateUserResult;
 
-class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
+class AuthenticateUserWithAccessTokenTest extends \PvtTest\PvtTestCase
 {
     private $interactor;
 
@@ -18,25 +18,25 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
         parent::setup();
         $this->accessTokenStore = $this->getMock('\Pvt\DataAccess\AccessTokenStore');
         $this->userStore = $this->getMock('\Pvt\DataAccess\UserStore');
-        $this->interactor = new ValidateAccessToken($this->accessTokenStore, $this->userStore);
+        $this->interactor = new AuthenticateUserWithAccessToken($this->accessTokenStore, $this->userStore);
     }
 
-    public function testReturnsValidateAccessTokenResult()
+    public function testReturnsAuthenticateUserResult()
     {
         $result = $this->interactor->execute('access_token');
-        $this->assertTrue($result instanceof ValidateAccessTokenResult);
+        $this->assertTrue($result instanceof AuthenticateUserResult);
     }
 
     public function testResultIncludesInvalidIfNoneSupplied()
     {
         $result = $this->interactor->execute('');
-        $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
+        $this->assertTrue($result->hasError(AuthenticateUserResult::INVALID_ACCESS_TOKEN));
         
         $result = $this->interactor->execute('       ');
-        $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
+        $this->assertTrue($result->hasError(AuthenticateUserResult::INVALID_ACCESS_TOKEN));
         
         $result = $this->interactor->execute(null);
-        $this->assertTrue($result->hasError(ValidateAccessTokenResult::INVALID));
+        $this->assertTrue($result->hasError(AuthenticateUserResult::INVALID_ACCESS_TOKEN));
     }
 
     public function testResultIncludesFalseOrExpiredDataStore()
@@ -48,7 +48,7 @@ class ValidateAccessTokenTest extends \PvtTest\PvtTestCase
 
         $result = $this->interactor->execute('access_token');
 
-        $this->assertTrue($result->hasError(ValidateAccessTokenResult::FALSE_OR_EXPIRED));
+        $this->assertTrue($result->hasError(AuthenticateUserResult::FALSE_OR_EXPIRED_ACCESS_TOKEN));
     }
 
     public function testDontLookupInvalidAccessTokens()

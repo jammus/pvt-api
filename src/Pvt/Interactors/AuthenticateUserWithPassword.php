@@ -9,7 +9,7 @@ use Pvt\DataAccess\UserStore;
 /**
  * Exchange an email address and password for user and access token
  */
-class AuthenticateUser
+class AuthenticateUserWithPassword
 {
     private $userStore;
 

@@ -5,10 +5,10 @@ namespace PvtTest\Interactors;
 use Pvt\Core\AccessToken;
 use Pvt\Core\Password;
 use Pvt\Core\User;
-use Pvt\Interactors\AuthenticateUser;
+use Pvt\Interactors\AuthenticateUserWithPassword;
 use Pvt\Interactors\AuthenticateUserResult;
 
-class AuthenticateUserTest extends \PvtTest\PvtTestCase
+class AuthenticateUserWithPasswordTest extends \PvtTest\PvtTestCase
 {
     private $userStore;
 
@@ -24,7 +24,7 @@ class AuthenticateUserTest extends \PvtTest\PvtTestCase
         $this->accessTokenStore = $this->getMockBuilder('\Pvt\DataAccess\AccessTokenStore')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->interactor = new AuthenticateUser($this->userStore, $this->accessTokenStore);
+        $this->interactor = new AuthenticateUserWithPassword($this->userStore, $this->accessTokenStore);
     }
 
     public function testReturnsAuthenticateUserResult()
