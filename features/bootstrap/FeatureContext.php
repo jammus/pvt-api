@@ -122,8 +122,8 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveAnAuthorisationToken()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['auth_token']), 'No auth token set in response');
-        assertNotEmpty($response['auth_token'], 'Auth token is empty');
+        assertTrue(isset($response['access_token']), 'No auth token set in response');
+        assertNotEmpty($response['access_token'], 'Auth token is empty');
     }
 
     /**
@@ -132,8 +132,8 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveALinkToMyProfileUrl()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['profile']), 'No profile set in response');
-        assertNotEmpty($response['profile'], 'Profile is empty');
+        assertTrue(isset($response['profile_url']), 'No profile set in response');
+        assertNotEmpty($response['profile_url'], 'Profile is empty');
     }
 
     /**

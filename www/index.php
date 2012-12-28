@@ -10,7 +10,8 @@ use Pvt\DataAccess\SqlUserStore;
 use Pvt\DataAccess\SqlAccessTokenStore;
 use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Interactors\CreateUser;
-use Pvt\Interactors\ValidateAccessToken;
+use Pvt\Interactors\AuthenticateUserWithAccessToken;
+use Pvt\Interactors\AuthenticateUserWithPassword;
 
 $connection = DriverManager::getConnection(
     array(
@@ -27,14 +28,15 @@ $userStore = new SqlUserStore($connection);
 $createUser = new CreateUser($userStore);
 
 $tokenStore = new SqlAccessTokenStore($connection);
-$validateAccessToken = new ValidateAccessToken($tokenStore, $userStore);
+$authenticateWithAccessToken = new AuthenticateUserWithAccessToken($userStore, $tokenStore);
+$authenticateWithPassword = new AuthenticateUserWithPassword($userStore, $tokenStore);
 
 $app = new \Silex\Application();
 $app['debug'] = true;
 
-$app->post('/report', function (Silex\Application $app, Request $request) use ($validateAccessToken) {
+$app->post('/report', function (Silex\Application $app, Request $request) use ($authenticateWithAccessToken) {
     $tokenString = $request->get('access_token');
-    $result = $validateAccessToken->validate($tokenString);
+    $result = $authenticateWithAccessToken->execute($tokenString);
     if (!$result->isOk()) {
         $response = errorResponse(401, 'Please supply a valid access token.');
         return $app->json($response, $response['error']['code']);
@@ -42,9 +44,9 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
     return $app->json(array(), 201);
 });
 
-$app->post('/users', function (Silex\Application $app, Request $request) use ($createUser) {
+$app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
     try {
-        $result = $createUser->create(
+        $result = $createUser->execute(
             $request->get('name'),
             $request->get('email'),
             $request->get('password')
@@ -58,7 +60,13 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
         $response = errorResponse(400, 'Please supply a valid email, password and name.');
         return $app->json($response, $response['error']['code']);
     }
-    return $app->json(array());
+    $result = $authenticateWithPassword->execute($request->get('email'), $request->get('password'));
+    $accessToken = $result->accessToken();
+    $user = $result->user();
+    return $app->json(array(
+        'access_token' => $accessToken->token(),
+        'profile_url' => $user->profileUrl(),
+    ));
 });
 
 function errorResponse($code, $message)
