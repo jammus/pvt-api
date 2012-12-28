@@ -69,6 +69,22 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     ));
 });
 
+$app->post('/login', function( Silex\Application $app, Request $request) use ($authenticateWithPassword) {
+    $email = $request->get('email');
+    $password = $request->get('password');
+    $result = $authenticateWithPassword->execute($email, $password);
+    if (!$result->isOk()) {
+        $response = errorResponse(401, 'Invalid email address or password. Please try again.');
+        return $app->json($response, $response['error']['code']);
+    }
+    $accessToken = $result->accessToken();
+    $user = $result->user();
+    return $app->json(array(
+        'access_token' => $accessToken->token(),
+        'profile_url' => $user->profileUrl(),
+    ));
+});
+
 function errorResponse($code, $message)
 {
     return array(
