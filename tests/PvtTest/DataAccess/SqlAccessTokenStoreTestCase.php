@@ -2,9 +2,9 @@
 
 namespace PvtTest\DataAccess;
 
-use Pvt\DataAccess\SqlUserStore;
+use Pvt\DataAccess\SqlAccessTokenStore;
 
-abstract class SqlUserStoreTestCase extends \PvtTest\PvtTestCase
+abstract class SqlAccessTokenStoreTestCase extends \PvtTest\PvtTestCase
 {
     protected $db;
 
@@ -12,9 +12,10 @@ abstract class SqlUserStoreTestCase extends \PvtTest\PvtTestCase
 
     public function setup()
     {
+        parent::setup();
         $this->db = $this->getMockBuilder('\Doctrine\DBAL\Connection')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->store = new SqlUserStore($this->db);
+        $this->store = new SqlAccessTokenStore($this->db);
     }
 }

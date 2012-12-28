@@ -3,23 +3,9 @@
 namespace PvtTest\DataAccess;
 
 use Pvt\Core\AccessToken;
-use Pvt\DataAccess\SqlAccessTokenStore;
 
-class SqlAccessTokenStoreFetchByTokenString extends \PvtTest\PvtTestCase
+class SqlAccessTokenStoreFetchByTokenString extends SqlAccessTokenStoreTestCase
 {
-    private $db;
-
-    private $store;
-
-    public function setup()
-    {
-        parent::setup();
-        $this->db = $this->getMockBuilder('\Doctrine\DBAL\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->store = new SqlAccessTokenStore($this->db);
-    }
-
     public function testFetchesAssociativeArray()
     {
         $this->db->expects($this->once())
