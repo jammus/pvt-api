@@ -27,7 +27,7 @@ class AuthenticateUserWithAccessToken
      * @param string $tokenString The access token string as presented on
      * authentication.
      *
-     * @return ValidateAccessTokenResult Result includes the full access token
+     * @return AuthenticateUserResult Result includes the full access token
      * details and associated user if successful.
      */
     public function execute($tokenString)
