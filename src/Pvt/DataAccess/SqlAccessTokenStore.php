@@ -41,7 +41,7 @@ class SqlAccessTokenStore implements AccessTokenStore
     private function fetchAccessToken($query, Array $params)
     {
         $result = $this->db->fetchAssoc(
-            $query, 
+            $query,
             $params
         );
 
