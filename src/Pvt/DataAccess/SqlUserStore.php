@@ -46,6 +46,11 @@ class SqlUserStore implements UserStore
         return $this->db->lastInsertId('users_id_seq');
     }
 
+    /**
+     * @param int $id
+     *
+     * @return Pvt\Core\User
+     */
     public function fetchById($id)
     {
         $result = $this->db->fetchAssoc(
@@ -61,7 +66,27 @@ class SqlUserStore implements UserStore
         );
     }
 
+    /**
+     * @param string $email
+     *
+     * @return Pvt\Core\User
+     */
     public function fetchByEmail($email)
     {
+        $result = $this->db->fetchAssoc(
+            'SELECT * FROM users WHERE email = :email',
+            array('email' => $email)
+        );
+
+        if (!$result) {
+            return null;
+        }
+
+        return new User(
+            $result['id'],
+            $result['name'],
+            $result['email'],
+            Password::fromHash($result['password'])
+        );
     }
 }
