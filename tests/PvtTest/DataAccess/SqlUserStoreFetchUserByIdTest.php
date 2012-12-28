@@ -40,4 +40,10 @@ class SqlUserStoreFetchUserByIdTest extends SqlUserStoreTestCase
         );
         $this->assertEquals($expectedUser, $this->store->fetchById(1234));
     }
+
+    public function testReturnsNullWhenNoRowFound()
+    {
+        $result = $this->store->fetchById(987);
+        $this->assertNull($result);
+    }
 }

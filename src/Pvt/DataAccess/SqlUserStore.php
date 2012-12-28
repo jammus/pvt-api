@@ -53,16 +53,9 @@ class SqlUserStore implements UserStore
      */
     public function fetchById($id)
     {
-        $result = $this->db->fetchAssoc(
+        return $this->fetchUser(
             'SELECT * FROM users WHERE id = :id',
             array('id' => $id)
-        );
-
-        return new User(
-            $result['id'],
-            $result['name'],
-            $result['email'],
-            Password::fromHash($result['password'])
         );
     }
 
@@ -73,9 +66,17 @@ class SqlUserStore implements UserStore
      */
     public function fetchByEmail($email)
     {
-        $result = $this->db->fetchAssoc(
+        return $this->fetchUser(
             'SELECT * FROM users WHERE email = :email',
             array('email' => $email)
+        );
+    }
+
+    private function fetchUser($query, Array $params)
+    {
+        $result = $this->db->fetchAssoc(
+            $query,
+            $params
         );
 
         if (!$result) {
