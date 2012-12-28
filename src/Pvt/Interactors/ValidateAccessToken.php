@@ -41,15 +41,18 @@ class ValidateAccessToken
         if (mb_strlen($tokenString) === 0) {
             $errors[] = ValidateAccessTokenResult::INVALID;
         }
+
         if (empty($errors)) {
             $accessToken = $this->tokenStore->fetchByTokenString($tokenString);
             if ($accessToken === null) {
                 $errors[] = ValidateAccessTokenResult::FALSE_OR_EXPIRED;
             }
         }
+
         if (empty($errors)) {
             $user = $this->userStore->fetchById($accessToken->userId());
         }
+
         return new ValidateAccessTokenResult($user, $accessToken, $errors);
     }
 }

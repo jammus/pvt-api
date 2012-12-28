@@ -39,17 +39,21 @@ class AuthenticateUser
         if (!$user) {
             $errors[] = AuthenticateUserResult::INVALID_EMAIL;
         }
+
         if ($user && !$user->checkPassword($password)) {
             $errors[] = AuthenticateUserResult::INVALID_PASSWORD;
             $user = null;
         }
+
         if ($user) {
             $accessToken = $this->accessTokenStore->fetchByUserId($user->id());
         }
+
         if ($user && !$accessToken) {
             $accessToken = AccessToken::forUserId($user->id());
             $this->accessTokenStore->save($accessToken);
         }
+
         return new AuthenticateUserResult($user, $accessToken, $errors);
     }
 }
