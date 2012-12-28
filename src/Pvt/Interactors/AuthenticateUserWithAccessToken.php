@@ -15,7 +15,7 @@ class AuthenticateUserWithAccessToken
 
     private $userStore;
 
-    public function __construct(AccessTokenStore $tokenStore, UserStore $userStore)
+    public function __construct(UserStore $userStore, AccessTokenStore $tokenStore)
     {
         $this->tokenStore = $tokenStore;
         $this->userStore = $userStore;

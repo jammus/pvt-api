@@ -18,7 +18,7 @@ class AuthenticateUserWithAccessTokenTest extends \PvtTest\PvtTestCase
         parent::setup();
         $this->accessTokenStore = $this->getMock('\Pvt\DataAccess\AccessTokenStore');
         $this->userStore = $this->getMock('\Pvt\DataAccess\UserStore');
-        $this->interactor = new AuthenticateUserWithAccessToken($this->accessTokenStore, $this->userStore);
+        $this->interactor = new AuthenticateUserWithAccessToken($this->userStore, $this->accessTokenStore);
     }
 
     public function testReturnsAuthenticateUserResult()
