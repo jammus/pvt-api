@@ -36,6 +36,13 @@ class SqlAccessTokenStore implements AccessTokenStore
 
     public function save(AccessToken $accessToken)
     {
+        $this->db->insert(
+            'access_tokens',
+            array(
+                'user_id' => $accessToken->userId(),
+                'access_token' => $accessToken->token(),
+            )
+        );
     }
 
     private function fetchAccessToken($query, Array $params)
