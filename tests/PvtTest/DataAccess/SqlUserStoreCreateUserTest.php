@@ -2,26 +2,12 @@
 
 namespace PvtTest\DataAccess;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
 use Pvt\Core\Password;
-use Pvt\DataAccess\SqlUserStore;
 
-class SqlUserStoreCreateUserTest extends \PvtTest\PvtTestCase
+class SqlUserStoreCreateUserTest extends SqlUserStoreTestCase
 {
-    private $db;
-
-    private $store;
-
-    public function setup()
-    {
-        $this->db = $this->getMockBuilder('\Doctrine\DBAL\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->store = new SqlUserStore($this->db);
-    }
-
     public function testInsertsDetails()
     {
         $this->db->expects($this->once())

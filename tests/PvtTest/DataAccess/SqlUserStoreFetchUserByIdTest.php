@@ -2,27 +2,13 @@
 
 namespace PvtTest\DataAccess;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
 use Pvt\Core\Password;
 use Pvt\Core\User;
-use Pvt\DataAccess\SqlUserStore;
 
-class SqlUserStoreFetchUserByIdTest extends \PvtTest\PvtTestCase
+class SqlUserStoreFetchUserByIdTest extends SqlUserStoreTestCase
 {
-    private $db;
-
-    private $store;
-
-    public function setup()
-    {
-        $this->db = $this->getMockBuilder('\Doctrine\DBAL\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->store = new SqlUserStore($this->db);
-    }
-
     public function testFetchesAssociativeArray()
     {
         $this->db->expects($this->once())
