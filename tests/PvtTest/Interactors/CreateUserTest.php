@@ -4,7 +4,6 @@ namespace PvtTest\Interactors;
 
 use Pvt\Core\User;
 use Pvt\DataAccess\UserStore;
-use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Exceptions\UniqueConstraintViolationException;
 use Pvt\Interactors\CreateUser;
 use Pvt\Interactors\CreateUserResult;

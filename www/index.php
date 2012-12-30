@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Pvt\DataAccess\SqlUserStore;
 use Pvt\DataAccess\SqlAccessTokenStore;
-use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Interactors\CreateUser;
 use Pvt\Interactors\CreateUserResult;
 use Pvt\Interactors\AuthenticateUserWithAccessToken;

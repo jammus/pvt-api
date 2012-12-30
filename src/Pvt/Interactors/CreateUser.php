@@ -5,7 +5,6 @@ namespace Pvt\Interactors;
 use Pvt\Core\Password;
 use Pvt\Core\User;
 use Pvt\DataAccess\UserStore;
-use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Exceptions\UniqueConstraintViolationException;
 
 /**
@@ -25,9 +24,6 @@ class CreateUser
      * @param string $name User's full name.
      * @param string $email User's email address.
      * @param string $password User's desired plaintext password
-     *
-     * @throws DuplicateUserException if a user with supplied email address already
-     * exists.
      *
      * @return CreateUserResult
      */
