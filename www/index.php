@@ -10,6 +10,7 @@ use Pvt\DataAccess\SqlUserStore;
 use Pvt\DataAccess\SqlAccessTokenStore;
 use Pvt\Exceptions\DuplicateUserException;
 use Pvt\Interactors\CreateUser;
+use Pvt\Interactors\CreateUserResult;
 use Pvt\Interactors\AuthenticateUserWithAccessToken;
 use Pvt\Interactors\AuthenticateUserWithPassword;
 
@@ -45,14 +46,12 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
-    try {
-        $result = $createUser->execute(
-            $request->get('name'),
-            $request->get('email'),
-            $request->get('password')
-        );
-    }
-    catch (DuplicateUserException $e) {
+    $result = $createUser->execute(
+        $request->get('name'),
+        $request->get('email'),
+        $request->get('password')
+    );
+    if ($result->hasError(CreateUserResult::DUPLICATE_USER)) {
         $response = errorResponse(409, 'That email address has already been used to register an account.');
         return $app->json($response, $response['error']['code']);
     }

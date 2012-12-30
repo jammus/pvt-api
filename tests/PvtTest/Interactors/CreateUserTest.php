@@ -98,12 +98,12 @@ class CreateUserTest extends \PvtTest\PvtTestCase
         $this->assertEquals($user, $result->user());
     }
 
-    public function testThrowsDuplicateUserExceptionOnUniqueConstraint()
+    public function testResultIncludesDuplicateUserOnUniqueConstraint()
     {
         $this->userstore->expects($this->any())
             ->method('create')
             ->will($this->throwException(new UniqueConstraintViolationException()));
-        $this->setExpectedException('Pvt\Exceptions\DuplicateUserException');
-        $this->interactor->execute('blah', 'blah@blah.com', 'blahblah');
+        $result = $this->interactor->execute('blah', 'blah@blah.com', 'blahblah');
+        $this->assertTrue($result->hasError(CreateUserResult::DUPLICATE_USER));
     }
 }

@@ -37,20 +37,24 @@ class CreateUser
         $name = trim($name);
         $email = trim($email);
 
+        $user = null;
+
         $errors = $this->validateInput($name, $email, $password);
         if ($errors) {
-            return new CreateUserResult(null, $errors);
+            return new CreateUserResult($user, $errors);
         }
 
         try {
             $id = $this->userstore->create($name, $email, Password::fromPlainText($password));
         } catch (UniqueConstraintViolationException $e) {
-            throw new DuplicateUserException('Cannot create user with email: ' . $email);
+            $errors[] = CreateUserResult::DUPLICATE_USER;
         }
 
-        $user = $this->userstore->fetchById($id);
+        if (isset($id) && empty($errors)) {
+            $user = $this->userstore->fetchById($id);
+        }
 
-        return new CreateUserResult($user);
+        return new CreateUserResult($user, $errors);
     }
 
     private function validateInput($name, $email, $password)

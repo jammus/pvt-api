@@ -7,6 +7,7 @@ class CreateUserResult extends Result
     const INVALID_EMAIL = -1;
     const PASSWORD_TOO_SHORT = -2;
     const MISSING_NAME = -3;
+    const DUPLICATE_USER = -4;
 
     private $user;
 
