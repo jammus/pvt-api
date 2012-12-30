@@ -26,8 +26,8 @@ $connection = DriverManager::getConnection(
 
 $userStore = new SqlUserStore($connection);
 $createUser = new CreateUser($userStore);
-
 $tokenStore = new SqlAccessTokenStore($connection);
+
 $authenticateWithAccessToken = new AuthenticateUserWithAccessToken($userStore, $tokenStore);
 $authenticateWithPassword = new AuthenticateUserWithPassword($userStore, $tokenStore);
 
@@ -36,31 +36,39 @@ $app['debug'] = true;
 
 $app->post('/report', function (Silex\Application $app, Request $request) use ($authenticateWithAccessToken) {
     $tokenString = $request->get('access_token');
+
     $result = $authenticateWithAccessToken->execute($tokenString);
+
     if (!$result->isOk()) {
         $response = errorResponse(401, 'Please supply a valid access token.');
         return $app->json($response, $response['error']['code']);
     }
+
     return $app->json('', 201);
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
-    $result = $createUser->execute(
-        $request->get('name'),
-        $request->get('email'),
-        $request->get('password')
-    );
+    $name = $request->get('name');
+    $email = $request->get('email');
+    $password = $request->get('password');
+
+    $result = $createUser->execute($name, $email, $password);
+
     if ($result->hasError(CreateUserResult::DUPLICATE_USER)) {
         $response = errorResponse(409, 'That email address has already been used to register an account.');
         return $app->json($response, $response['error']['code']);
     }
+
     if (!$result->isOk()) {
         $response = errorResponse(400, 'Please supply a valid email, password and name.');
         return $app->json($response, $response['error']['code']);
     }
-    $result = $authenticateWithPassword->execute($request->get('email'), $request->get('password'));
+
+    $result = $authenticateWithPassword->execute($email, $password);
+
     $accessToken = $result->accessToken();
     $user = $result->user();
+
     return $app->json(array(
         'access_token' => $accessToken->token(),
         'profile_url' => $user->profileUrl(),
@@ -70,13 +78,17 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
 $app->post('/login', function( Silex\Application $app, Request $request) use ($authenticateWithPassword) {
     $email = $request->get('email');
     $password = $request->get('password');
+
     $result = $authenticateWithPassword->execute($email, $password);
+
     if (!$result->isOk()) {
         $response = errorResponse(401, 'Invalid email address or password. Please try again.');
         return $app->json($response, $response['error']['code']);
     }
+
     $accessToken = $result->accessToken();
     $user = $result->user();
+
     return $app->json(array(
         'access_token' => $accessToken->token(),
         'profile_url' => $user->profileUrl(),
