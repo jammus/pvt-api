@@ -41,7 +41,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
         $response = errorResponse(401, 'Please supply a valid access token.');
         return $app->json($response, $response['error']['code']);
     }
-    return $app->json(array(), 201);
+    return $app->json('', 201);
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {

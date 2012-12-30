@@ -209,9 +209,9 @@ class FeatureContext extends BehatContext
     /**
      * @Given /^I should be directed to the report at "([^"]*)"$/
      */
-    public function iShouldBeDirectedToTheReportAt($arg1)
+    public function iShouldBeDirectedToTheReportAt($reportPattern)
     {
-        throw new PendingException();
+        assertStringMatchesFormat($reportPattern, $this->response, '"' . $this->response . '" does not match: "' . $reportPattern . '"');
     }
 
     /**
