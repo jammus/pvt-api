@@ -96,4 +96,26 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
 
         $this->assertEquals($existingPvtResult, $result->pvtResult());
     }
+
+    public function testResultIncludesUnknownErrorWhenCouldNotSave()
+    {
+        $this->store->expects($this->any())
+            ->method('save')
+            ->will($this->throwException(new \Exception()));
+
+        $result = $this->interactor->execute(10001, 1234567890, 3, array());
+
+        $this->assertTrue($result->hasError(SubmitPvtResultResult::UNKNOWN_ERROR));
+    }
+
+    public function testResultDoesNotIncludePvtResultWhenCouldNotSave()
+    {
+        $this->store->expects($this->any())
+            ->method('save')
+            ->will($this->throwException(new \Exception()));
+
+        $result = $this->interactor->execute(10001, 1234567890, 3, array());
+
+        $this->assertNull($result->pvtResult());
+    }
 }

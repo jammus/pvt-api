@@ -4,6 +4,8 @@ namespace Pvt\Interactors;
 
 class Result
 {
+    const UNKNOWN_ERROR = 0;
+
     private $errors;
 
     /**
