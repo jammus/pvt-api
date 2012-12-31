@@ -34,8 +34,7 @@ class SubmitPvtResult
 
         try {
             $this->store->save($result);
-        }
-        catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException $e) {
             $errors[] = SubmitPvtResultResult::DUPLICATE_SUBMISSION;
             $result = $this->store->getByUserIdAndTimestamp($userId, $timestamp);
         }
