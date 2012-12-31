@@ -20,12 +20,14 @@ class SubmitPvtResult
      * @param int $timestamp
      * @param int $errorCount
      * @param array[]float $time
+     *
+     * @return SubmitPvtResultResult
      */
     public function execute($userId, $timestamp, $errorCount, Array $times)
     {
         $errors = array();
 
-        $result = new PvtResult(
+        $pvtResult = new PvtResult(
             $userId,
             $timestamp,
             $errorCount,
@@ -33,15 +35,15 @@ class SubmitPvtResult
         );
 
         try {
-            $this->store->save($result);
+            $this->store->save($pvtResult);
         } catch (UniqueConstraintViolationException $e) {
             $errors[] = SubmitPvtResultResult::DUPLICATE_SUBMISSION;
-            $result = $this->store->getByUserIdAndTimestamp($userId, $timestamp);
+            $pvtResult = $this->store->getByUserIdAndTimestamp($userId, $timestamp);
         } catch (\Exception $e) {
             $errors[] = SubmitPvtResultResult::UNKNOWN_ERROR;
-            $result = null;
+            $pvtResult = null;
         }
 
-        return new SubmitPvtResultResult($result, $errors);
+        return new SubmitPvtResultResult($pvtResult, $errors);
     }
 }
