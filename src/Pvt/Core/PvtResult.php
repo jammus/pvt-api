@@ -75,4 +75,12 @@ class PvtResult
         }
         return array_sum($this->responses) / count($this->responses);
     }
+
+    /**
+     * @return string Url where associated report can be obtained.
+     */
+    public function reportUrl()
+    {
+        return '/users/' . $this->userId . '/report/' . $this->timestamp;
+    }
 }

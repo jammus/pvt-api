@@ -93,4 +93,10 @@ class PvtResultTest extends \PvtTest\PvtTestCase
         );
         $this->assertEquals(386.362, $result->averageResponseTime());
     }
+
+    public function testReportUrlIsMadeUpOfUserAndTimestamp()
+    {
+        $result = new PvtResult(10001, 1234567890);
+        $this->assertEquals('/users/10001/report/1234567890', $result->reportUrl());
+    }
 }
