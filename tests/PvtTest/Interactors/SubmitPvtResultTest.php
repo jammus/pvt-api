@@ -69,7 +69,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->will($this->throwException(new UniqueConstraintViolationException()));
 
         $this->store->expects($this->once())
-            ->method('getByUserIdAndTimestamp')
+            ->method('fetchByUserIdAndTimestamp')
             ->with(10001, 1234567890);
 
         $result = $this->interactor->execute(10001, 1234567890, 3, array(
@@ -87,7 +87,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->method('save')
             ->will($this->throwException(new UniqueConstraintViolationException()));
         $this->store->expects($this->any())
-            ->method('getByUserIdAndTimestamp')
+            ->method('fetchByUserIdAndTimestamp')
             ->will($this->returnValue($existingPvtResult));
 
         $result = $this->interactor->execute(10001, 1234567890, 3, array(

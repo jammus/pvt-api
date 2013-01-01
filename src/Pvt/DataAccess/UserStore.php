@@ -9,7 +9,7 @@ interface UserStore
     /**
      * @param string $name User's full name.
      * @param string $email User's email address.
-     * @param string $password User's plaintext password
+     * @param Pvt\Core\Password $password User's password
      *
      * @return int New user's id on success.
      */
