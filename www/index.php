@@ -86,10 +86,12 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     $accessToken = $result->accessToken();
     $user = $result->user();
 
-    return $app->json(array(
-        'access_token' => $accessToken->token(),
-        'profile_url' => $user->profileUrl(),
-    ));
+    return $app->json(
+        array(
+            'access_token' => $accessToken->token(),
+            'profile_url' => $user->profileUrl(),
+        )
+    );
 });
 
 $app->post('/login', function (Silex\Application $app, Request $request) use ($authenticateWithPassword) {
@@ -106,20 +108,24 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
     $accessToken = $result->accessToken();
     $user = $result->user();
 
-    return $app->json(array(
-        'access_token' => $accessToken->token(),
-        'profile_url' => $user->profileUrl(),
-    ));
+    return $app->json(
+        array(
+            'access_token' => $accessToken->token(),
+            'profile_url' => $user->profileUrl(),
+        )
+    );
 });
 
 $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app, Request $request, $userId, $timestamp) use ($pvtResultStore) {
     $pvtResult = $pvtResultStore->fetchByUserIdAndTimestamp($userId, $timestamp);
 
-    return $app->json(array(
-        'timestamp' => $pvtResult->date()->getTimestamp(),
-        'errors' => $pvtResult->errors(),
-        'average_response_time' => $pvtResult->averageResponseTime()
-    ));
+    return $app->json(
+        array(
+            'timestamp' => $pvtResult->date()->getTimestamp(),
+            'errors' => $pvtResult->errors(),
+            'average_response_time' => $pvtResult->averageResponseTime()
+        )
+    );
 });
 
 function errorResponse($code, $message)
