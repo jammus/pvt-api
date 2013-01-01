@@ -90,6 +90,13 @@ class FeatureContext extends BehatContext
         $this->submitForm('/report');
     }
 
+    private function loadUrl($url)
+    {
+        $this->ch = curl_init($this->BASE_URL . $url);
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+        $this->response = curl_exec($this->ch);
+    }
+
     private function submitForm($url)
     {
         $this->ch = curl_init($this->BASE_URL . $url);
@@ -200,7 +207,7 @@ class FeatureContext extends BehatContext
     public function iHaveSubmittedTheFollowingPvtResult($tense, TableNode $table)
     {
         $reportData = $table->getHash();
-        $this->postData['timestamp'] = $reportData[0]['date'];
+        $this->postData['timestamp'] = $reportData[0]['timestamp'];
         $this->postData['errors'] = $reportData[0]['errors'];
         $this->postData['response_times'] = $reportData[0]['rts'];
         $this->submitForm('/report');
@@ -219,7 +226,7 @@ class FeatureContext extends BehatContext
      */
     public function iViewThePvtReport()
     {
-        throw new PendingException();
+        $this->loadUrl($this->response);
     }
 
     /**
@@ -227,7 +234,11 @@ class FeatureContext extends BehatContext
      */
     public function iShouldSeeTheReportContains(TableNode $table)
     {
-        throw new PendingException();
+        $expectedData = $table->getHash();
+        $actualData = $this->jsonResponse();
+        assertEquals($expectedData[0]['timestamp'], $actualData['timestamp']);
+        assertEquals($expectedData[0]['errors'], $actualData['errors']);
+        assertEquals($expectedData[0]['average_response_time'], $actualData['average_response_time']);
     }
 
     /**
