@@ -72,7 +72,11 @@ class SqlPvtResultStore implements PvtResultStore
                 } catch (DBALException $e) {
                     $previous = $e->getPrevious();
                     if (isset($previous) && $previous->getCode() == 23505) {
-                        throw new UniqueConstraintViolationException('Could not insert duplicate key of user_id: ' . $pvtResult->userId() . ', timestamp: ' . $pvtResult->date()->getTimestamp());
+                        throw new UniqueConstraintViolationException(
+                            'Could not insert duplicate key of ' .
+                                'user_id: ' . $pvtResult->userId() . ', ' .
+                                'timestamp: ' . $pvtResult->date()->getTimestamp()
+                        );
                     }
                     throw $e;
                 }
