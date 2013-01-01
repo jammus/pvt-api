@@ -200,9 +200,9 @@ class FeatureContext extends BehatContext
     public function iHaveSubmittedTheFollowingPvtResult($tense, TableNode $table)
     {
         $reportData = $table->getHash();
-        $this->postData['date'] = $reportData[0]['date'];
-        $this->postData['avgRt'] = $reportData[0]['average rt'];
+        $this->postData['timestamp'] = $reportData[0]['date'];
         $this->postData['errors'] = $reportData[0]['errors'];
+        $this->postData['response_times'] = $reportData[0]['rts'];
         $this->submitForm('/report');
     }
 
@@ -211,7 +211,7 @@ class FeatureContext extends BehatContext
      */
     public function iShouldBeDirectedToTheReportAt($reportPattern)
     {
-        assertStringMatchesFormat($reportPattern, $this->response, '"' . $this->response . '" does not match: "' . $reportPattern . '"');
+        assertRegExp($reportPattern, $this->response, '"' . $this->response . '" does not match: "' . $reportPattern . '"');
     }
 
     /**

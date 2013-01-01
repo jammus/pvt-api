@@ -27,7 +27,7 @@ Feature: Result submission
             | date                | errors    | rts                                 |
             | 1234567890          | 2         | 402.50,323.87,327.90,478.91,398.63  |
         Then I should get a 201 response code
-        And I should be directed to the report at "/user/(d+)/report/1234567890"
+        And I should be directed to the report at "/\/users\/(\d+)\/report\/1234567890/"
 
     Scenario: Resubmission
         Given the following accounts exist:
@@ -44,7 +44,7 @@ Feature: Result submission
             | date                | errors    | rts                                 |
             | 1234567890          | 2         | 402.50,323.87,327.90,478.91,398.63  |
         Then I should get a 301 response code
-        And I should be directed to the report at "/user/(d+)/report/1234567890"
+        And I should be directed to the report at "/\/users\/(\d+)\/report\/1234567890/"
 
     Scenario: Viewing submitted report
         Given the following accounts exist:

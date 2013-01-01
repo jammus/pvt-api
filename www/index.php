@@ -5,13 +5,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Doctrine\DBAL\DriverManager;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use Pvt\DataAccess\SqlUserStore;
 use Pvt\DataAccess\SqlAccessTokenStore;
+use Pvt\DataAccess\SqlPvtResultStore;
 use Pvt\Interactors\CreateUser;
 use Pvt\Interactors\CreateUserResult;
 use Pvt\Interactors\AuthenticateUserWithAccessToken;
 use Pvt\Interactors\AuthenticateUserWithPassword;
+use Pvt\Interactors\SubmitPvtResult;
+use Pvt\Interactors\SubmitPvtResultResult;
 
 $connection = DriverManager::getConnection(
     array(
@@ -27,14 +31,16 @@ $connection = DriverManager::getConnection(
 $userStore = new SqlUserStore($connection);
 $createUser = new CreateUser($userStore);
 $tokenStore = new SqlAccessTokenStore($connection);
+$pvtResultStore = new SqlPvtResultStore($connection);
 
 $authenticateWithAccessToken = new AuthenticateUserWithAccessToken($userStore, $tokenStore);
 $authenticateWithPassword = new AuthenticateUserWithPassword($userStore, $tokenStore);
+$submitPvtResult = new SubmitPvtResult($pvtResultStore);
 
 $app = new \Silex\Application();
 $app['debug'] = true;
 
-$app->post('/report', function (Silex\Application $app, Request $request) use ($authenticateWithAccessToken) {
+$app->post('/report', function (Silex\Application $app, Request $request) use ($authenticateWithAccessToken, $submitPvtResult) {
     $tokenString = $request->get('access_token');
 
     $result = $authenticateWithAccessToken->execute($tokenString);
@@ -44,7 +50,18 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
         return $app->json($response, $response['error']['code']);
     }
 
-    return $app->json('', 201);
+    $userId = $result->user()->id();
+    $timestamp = $request->get('timestamp');
+    $errorCount = $request->get('errors');
+    $responseTimes = explode(',', $request->get('response_times'));
+
+    $result = $submitPvtResult->execute($userId, $timestamp, $errorCount, $responseTimes);
+
+    $responseCode = 201;
+    if ($result->hasError(SubmitPvtResultResult::DUPLICATE_SUBMISSION)) {
+        $responseCode = 301;
+    }
+    return new Response($result->pvtResult()->reportUrl(), $responseCode);
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
