@@ -30,13 +30,18 @@ class SqlPvtResultStore implements PvtResultStore
                     'ORDER BY ' .
                         't2.sequence';
 
-        $rows = $this->db->fetchAll(
+        return $this->fetchPvtResult(
             $query,
             array(
                 'user_id' => $userId,
                 'timestamp' => $timestamp
             )
         );
+    }
+
+    private function fetchPvtResult($query, $parameters)
+    {
+        $rows = $this->db->fetchAll($query, $parameters);
 
         if (!$rows) {
             return null;
