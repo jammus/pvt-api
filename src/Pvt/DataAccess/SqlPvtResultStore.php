@@ -30,10 +30,13 @@ class SqlPvtResultStore implements PvtResultStore
                     'ORDER BY ' .
                         't2.sequence';
 
-        $rows = $this->db->fetchAll($query, array(
-            'user_id' => $userId,
-            'timestamp' => $timestamp
-        ));
+        $rows = $this->db->fetchAll(
+            $query,
+            array(
+                'user_id' => $userId,
+                'timestamp' => $timestamp
+            )
+        );
 
         if (!$rows) {
             return null;
@@ -44,7 +47,7 @@ class SqlPvtResultStore implements PvtResultStore
             $rows[0]['timestamp'],
             $rows[0]['error_count'],
             array_map(
-                function($row) {
+                function ($row) {
                     return $row['response_time'];
                 },
                 $rows
@@ -54,37 +57,39 @@ class SqlPvtResultStore implements PvtResultStore
 
     public function save(PvtResult $pvtResult)
     {
-        $this->db->transactional(function($db) use ($pvtResult) {
-            try {
-                $db->insert(
-                    'pvt_results',
-                    array(
-                        'user_id' => $pvtResult->userId(),
-                        'timestamp' => $pvtResult->date()->getTimestamp(),
-                        'error_count' => $pvtResult->errors(),
-                        'average_response_time' => $pvtResult->averageResponseTime()
-                    )
-                );
-            } catch (DBALException $e) {
-                $previous = $e->getPrevious();
-                if (isset($previous) && $previous->getCode() == 23505) {
-                    throw new UniqueConstraintViolationException('Could not insert duplicate key of user_id: ' . $pvtResult->userId() . ', timestamp: ' . $pvtResult->date()->getTimestamp());
+        $this->db->transactional(
+            function ($db) use ($pvtResult) {
+                try {
+                    $db->insert(
+                        'pvt_results',
+                        array(
+                            'user_id' => $pvtResult->userId(),
+                            'timestamp' => $pvtResult->date()->getTimestamp(),
+                            'error_count' => $pvtResult->errors(),
+                            'average_response_time' => $pvtResult->averageResponseTime()
+                        )
+                    );
+                } catch (DBALException $e) {
+                    $previous = $e->getPrevious();
+                    if (isset($previous) && $previous->getCode() == 23505) {
+                        throw new UniqueConstraintViolationException('Could not insert duplicate key of user_id: ' . $pvtResult->userId() . ', timestamp: ' . $pvtResult->date()->getTimestamp());
+                    }
+                    throw $e;
                 }
-                throw $e;
-            }
 
-            $responses = $pvtResult->responses();
-            for ($index = 0; $index < count($responses); $index++) {
-                $db->insert(
-                    'pvt_results_response_times',
-                    array(
-                        'user_id' => $pvtResult->userId(),
-                        'timestamp' => $pvtResult->date()->getTimestamp(),
-                        'sequence' => $index + 1,
-                        'response_time' => $responses[$index]
-                    )
-                );
+                $responses = $pvtResult->responses();
+                for ($index = 0; $index < count($responses); $index++) {
+                    $db->insert(
+                        'pvt_results_response_times',
+                        array(
+                            'user_id' => $pvtResult->userId(),
+                            'timestamp' => $pvtResult->date()->getTimestamp(),
+                            'sequence' => $index + 1,
+                            'response_time' => $responses[$index]
+                        )
+                    );
+                }
             }
-        });
+        );
     }
 }
