@@ -92,7 +92,7 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     ));
 });
 
-$app->post('/login', function( Silex\Application $app, Request $request) use ($authenticateWithPassword) {
+$app->post('/login', function (Silex\Application $app, Request $request) use ($authenticateWithPassword) {
     $email = $request->get('email');
     $password = $request->get('password');
 
@@ -109,6 +109,16 @@ $app->post('/login', function( Silex\Application $app, Request $request) use ($a
     return $app->json(array(
         'access_token' => $accessToken->token(),
         'profile_url' => $user->profileUrl(),
+    ));
+});
+
+$app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app, Request $request, $userId, $timestamp) use ($pvtResultStore) {
+    $pvtResult = $pvtResultStore->fetchByUserIdAndTimestamp($userId, $timestamp);
+
+    return $app->json(array(
+        'timestamp' => $pvtResult->date()->getTimestamp(),
+        'errors' => $pvtResult->errors(),
+        'average_response_time' => $pvtResult->averageResponseTime()
     ));
 });
 
