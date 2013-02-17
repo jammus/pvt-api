@@ -254,6 +254,7 @@ class FeatureContext extends BehatContext
         $actualData = $this->jsonResponse();
         assertEquals($expectedData[0]['timestamp'], $actualData['timestamp']);
         assertEquals($expectedData[0]['errors'], $actualData['errors']);
+        assertEquals($expectedData[0]['lapses'], $actualData['lapses']);
         assertEquals($expectedData[0]['average_response_time'], $actualData['average_response_time']);
     }
 

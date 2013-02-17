@@ -56,9 +56,9 @@ Feature: Result submission
         And I have supplied the access token "abcdefgh"
         And I have submitted the following PVT result:
             | timestamp             | errors    | rts                                 |
-            | 1234567890            | 2         | 402.50,323.87,327.90,478.91,398.63  |
+            | 1234567890            | 2         | 402.50,523.87,327.90,678.91,398.63  |
         When I view the PVT report
         Then I should get a 200 response code
         And I should see the report contains:
-            | timestamp         | average_response_time | errors    |
-            | 1234567890        | 386.362               | 2         |
+            | timestamp         | average_response_time | errors    | lapses    |
+            | 1234567890        | 466.362               | 2         | 2         |

@@ -99,4 +99,56 @@ class PvtResultTest extends \PvtTest\PvtTestCase
         $result = new PvtResult(10001, 1234567890);
         $this->assertEquals('/users/10001/report/1234567890', $result->reportUrl());
     }
+
+    public function testLapsesAreZeroByDefault()
+    {
+        $result = new PvtResult(10001, 1356868376);
+        $this->assertEquals(0, $result->lapses());
+    }
+
+    public function testResponseTimes500msAndOverAreConsideredLapses()
+    {
+        $result = new PvtResult(10001, 1356868376, 0, array(100));
+        $this->assertEquals(0, $result->lapses());
+        
+        $result = new PvtResult(10001, 1356868376, 0, array(200));
+        $this->assertEquals(0, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(400));
+        $this->assertEquals(0, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(499.99));
+        $this->assertEquals(0, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(500));
+        $this->assertEquals(1, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(500.01));
+        $this->assertEquals(1, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(600));
+        $this->assertEquals(1, $result->lapses());
+
+        $result = new PvtResult(10001, 1356868376, 0, array(1000));
+        $this->assertEquals(1, $result->lapses());
+
+        $result = new PvtResult(
+            10001,
+            1356868376,
+            0,
+            array(
+                100.00,
+                200.00,
+                300.00,
+                400.00,
+                500.00,
+                600.00,
+                700.00,
+                800.00,
+                900.00,
+                1000.00
+            )
+        );
+        $this->assertEquals(6, $result->lapses());
+    }
 }

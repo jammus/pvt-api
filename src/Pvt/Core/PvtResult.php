@@ -56,6 +56,23 @@ class PvtResult
     }
 
     /**
+     * The number of attentional lapses made during the task. Response
+     * times of 500ms and over are considered attentional lapses.
+     *
+     * @return int
+     */
+    public function lapses()
+    {
+        return array_reduce(
+            $this->responses,
+            function ($count, $response) {
+                return $response >= 500 ? $count + 1 : $count;
+            },
+            0
+        );
+    }
+
+    /**
      * The individual response times reported.
      *
      * @return array[]float

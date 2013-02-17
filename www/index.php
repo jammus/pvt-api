@@ -142,7 +142,8 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
         array(
             'timestamp' => $pvtResult->date()->getTimestamp(),
             'errors' => $pvtResult->errors(),
-            'average_response_time' => $pvtResult->averageResponseTime()
+            'lapses' => $pvtResult->lapses(),
+            'average_response_time' => $pvtResult->averageResponseTime(),
         )
     );
 });
