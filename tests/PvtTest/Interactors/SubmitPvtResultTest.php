@@ -17,22 +17,20 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
 
     public function testSavesDetailsAsPvtResult()
     {
-        $expectedPvtResult = new PvtResult(10001, 1234567890, array(
+        $expectedPvtResult = new PvtResult(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
-
         $this->store->expects($this->once())
             ->method('save')
             ->with($this->equalTo($expectedPvtResult));
-        
-        $this->interactor->execute(10001, 1234567890, array(
+        $this->interactor->execute(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
     }
 
     public function testReturnsSubmitPvtResultResult()
     {
-        $result = $this->interactor->execute(10001, 1234567890, array(
+        $result = $this->interactor->execute(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
         $this->assertInstanceOf('\Pvt\Interactors\SubmitPvtResultResult', $result);
@@ -40,20 +38,18 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
 
     public function testResultIsOkWhenSuccessful()
     {
-        $result = $this->interactor->execute(1001, 1234667879, array());
+        $result = $this->interactor->execute(1001, 1234667879, 0, array());
         $this->assertTrue($result->isOk());
     }
 
     public function testResultIncludesResultWhenSuccessful()
     {
-        $expectedPvtResult = new PvtResult(10001, 1234567890, array(
+        $expectedPvtResult = new PvtResult(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
-
-        $result = $this->interactor->execute(10001, 1234567890, array(
+        $result = $this->interactor->execute(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
-
         $this->assertEquals($expectedPvtResult, $result->pvtResult());
     }
 
@@ -62,9 +58,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
         $this->store->expects($this->any())
             ->method('save')
             ->will($this->throwException(new UniqueConstraintViolationException()));
-
-        $result = $this->interactor->execute(1001, 1234667879, array());
-
+        $result = $this->interactor->execute(1001, 1234667879, 0, array());
         $this->assertTrue($result->hasError(SubmitPvtResultResult::DUPLICATE_SUBMISSION));
     }
 
@@ -78,14 +72,14 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->method('fetchByUserIdAndTimestamp')
             ->with(10001, 1234567890);
 
-        $result = $this->interactor->execute(10001, 1234567890, array(
+        $result = $this->interactor->execute(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
     }
 
     public function testResultIncludesExistingResultWhenDuplicateSubmission()
     {
-        $existingPvtResult = new PvtResult(10001, 1234567890, array(
+        $existingPvtResult = new PvtResult(10001, 1234567890, 0, array(
             234.56, 345.67, 456.78, 567.89
         ));
 
@@ -96,7 +90,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->method('fetchByUserIdAndTimestamp')
             ->will($this->returnValue($existingPvtResult));
 
-        $result = $this->interactor->execute(10001, 1234567890, array(
+        $result = $this->interactor->execute(10001, 1234567890, 3, array(
             123.45, 234.56, 345.67, 456.78
         ));
 
@@ -109,7 +103,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->method('save')
             ->will($this->throwException(new \Exception()));
 
-        $result = $this->interactor->execute(10001, 1234567890, array());
+        $result = $this->interactor->execute(10001, 1234567890, 3, array());
 
         $this->assertTrue($result->hasError(SubmitPvtResultResult::UNKNOWN_ERROR));
     }
@@ -120,7 +114,7 @@ class SubmitPvtResultTest extends \PvtTest\PvtTestCase
             ->method('save')
             ->will($this->throwException(new \Exception()));
 
-        $result = $this->interactor->execute(10001, 1234567890, array());
+        $result = $this->interactor->execute(10001, 1234567890, 3, array());
 
         $this->assertNull($result->pvtResult());
     }

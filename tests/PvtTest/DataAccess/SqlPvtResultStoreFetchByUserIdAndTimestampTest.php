@@ -49,35 +49,35 @@ class SqlPvtResultStoreFetchByUserIdAndTimestampTest extends \PvtTest\PvtDatabas
                         'user_id' => 10001,
                         'timestamp' => 1234567890,
                         'average_response_time' => 123,
-                        'error_count' => 1,
+                        'error_count' => 2,
                         'response_time' => 1.1
                     ),
                     array(
                         'user_id' => 10001,
                         'timestamp' => 1234567890,
                         'average_response_time' => 123,
-                        'error_count' => 1,
-                        'response_time' => 600.2
+                        'error_count' => 2,
+                        'response_time' => 2.2
                     ),
                     array(
                         'user_id' => 10001,
                         'timestamp' => 1234567890,
                         'average_response_time' => 123,
-                        'error_count' => 1,
+                        'error_count' => 2,
                         'response_time' => 3.3
                     ),
                     array(
                         'user_id' => 10001,
                         'timestamp' => 1234567890,
                         'average_response_time' => 123,
-                        'error_count' => 1,
+                        'error_count' => 2,
                         'response_time' => 4.4
                     ),
                     array(
                         'user_id' => 10001,
                         'timestamp' => 1234567890,
                         'average_response_time' => 123,
-                        'error_count' => 1,
+                        'error_count' => 2,
                         'response_time' => 5.5
                     ),
                 )
@@ -87,8 +87,8 @@ class SqlPvtResultStoreFetchByUserIdAndTimestampTest extends \PvtTest\PvtDatabas
 
         $this->assertEquals(10001, $pvtResult->userId());
         $this->assertEquals(\DateTime::createFromFormat('U', 1234567890), $pvtResult->date());
-        $this->assertEquals(1, $pvtResult->errors());
-        $this->assertEquals(122.9, $pvtResult->averageResponseTime());
+        $this->assertEquals(2, $pvtResult->errors());
+        $this->assertEquals(3.3, $pvtResult->averageResponseTime());
     }
 
     public function testReturnsNullIsNoRowsFound()

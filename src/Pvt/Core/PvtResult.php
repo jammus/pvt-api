@@ -8,16 +8,20 @@ class PvtResult
 
     private $timestamp;
 
+    private $errors;
+
     private $responses;
 
     /**
      * @param $userId int Id of user that performed the task
      * @param $timestamp int Timestamp in seconds
+     * @param $errors int Number of errors made
      */
-    public function __construct($userId, $timestamp, Array $responses = array())
+    public function __construct($userId, $timestamp, $errors = 0, Array $responses = array())
     {
         $this->userId = $userId;
         $this->timestamp = $timestamp;
+        $this->errors = $errors;
         $this->responses = $responses;
     }
 
@@ -42,20 +46,13 @@ class PvtResult
     }
 
     /**
-     * The number of errors made during the task. A response
-     * time of 500ms or greater is considered an error.
+     * The number of errors made during the task.
      *
      * @return int
      */
     public function errors()
     {
-        return array_reduce(
-            $this->responses,
-            function ($count, $response) {
-                return $response >= 500 ? $count + 1 : $count;
-            },
-            0
-        );
+        return $this->errors;
     }
 
     /**

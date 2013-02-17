@@ -18,17 +18,19 @@ class SubmitPvtResult
     /**
      * @param int $userId
      * @param int $timestamp
+     * @param int $errorCount
      * @param array[]float $time
      *
      * @return SubmitPvtResultResult
      */
-    public function execute($userId, $timestamp, Array $times)
+    public function execute($userId, $timestamp, $errorCount, Array $times)
     {
         $errors = array();
 
         $pvtResult = new PvtResult(
             $userId,
             $timestamp,
+            $errorCount,
             $times
         );
 
