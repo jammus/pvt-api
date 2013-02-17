@@ -17,12 +17,21 @@ use Pvt\Interactors\AuthenticateUserWithPassword;
 use Pvt\Interactors\SubmitPvtResult;
 use Pvt\Interactors\SubmitPvtResultResult;
 
+$services = json_decode(getenv('VCAP_SERVICES'), true);
+$dbConfig = $services ? $services['postgresql-9.1'][0]['credentials'] : array(
+    'username' => 'jamess',
+    'password' => '',
+    'hostname' => '127.0.01',
+    'port' => '',
+    'name' => 'pvt-test',
+);
+
 $connection = DriverManager::getConnection(
     array(
-        'dbname' => 'pvt-test',
-        'user' => 'jamess',
-        'password' => '',
-        'host' => '127.0.0.1',
+        'dbname' => $dbConfig['name'],
+        'user' => $dbConfig['username'],
+        'password' => $dbConfig['password'],
+        'host' => $dbConfig['hostname'],
         'driver' => 'pdo_pgsql',
     ),
     new \Doctrine\DBAL\Configuration()
@@ -89,7 +98,12 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     return $app->json(
         array(
             'access_token' => $accessToken->token(),
-            'profile_url' => $user->profileUrl(),
+            'user' => array(
+                'id' => $user->id(),
+                'name' => $user->name(),
+                'email' => $user->email(),
+                'profile_url' => $user->profileUrl(),
+            ),
         )
     );
 });
@@ -111,7 +125,12 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
     return $app->json(
         array(
             'access_token' => $accessToken->token(),
-            'profile_url' => $user->profileUrl(),
+            'user' => array(
+                'id' => $user->id(),
+                'name' => $user->name(),
+                'email' => $user->email(),
+                'profile_url' => $user->profileUrl(),
+            ),
         )
     );
 });

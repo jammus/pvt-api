@@ -8,6 +8,7 @@ Feature: Account creation
         When I attempt to create a new account
         Then I should get a 200 response code
         And I should receive an authorisation token
+        And I should receive a user object containing an id, "<name>" and "<email>"
         And I should receive a link to my profile url
         Examples:
             | email             | password    | name      |

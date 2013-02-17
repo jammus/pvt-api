@@ -24,6 +24,8 @@ class FeatureContext extends BehatContext
 
     private $ch;
 
+    private $db;
+
     public function __construct(array $parameters)
     {
         $this->postData = array();
@@ -72,6 +74,7 @@ class FeatureContext extends BehatContext
     {
         $this->phabric->reset();
         $this->db->executeQuery('DELETE FROM users');
+        $this->db->close();
     }
 
     /**
@@ -132,6 +135,19 @@ class FeatureContext extends BehatContext
         assertTrue(isset($response['access_token']), 'No auth token set in response');
         assertNotEmpty($response['access_token'], 'Auth token is empty');
     }
+    
+    /**
+     * @Given /^I should receive a user object containing an id, "([^"]*)" and "([^"]*)"$/
+     */
+    public function iShouldReceiveAUserObjectContainingAnd($name, $email)
+    {
+        $response = $this->jsonResponse();
+        $user = $response['user'];
+        assertNotNull($user, 'No user in response');
+        assertInternalType('integer', $user['id']);
+        assertEquals($name, $user['name']);
+        assertEquals($email, $user['email']);
+    }
 
     /**
      * @Given /^I should receive a link to my profile url$/
@@ -139,8 +155,8 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveALinkToMyProfileUrl()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['profile_url']), 'No profile set in response');
-        assertNotEmpty($response['profile_url'], 'Profile is empty');
+        assertTrue(isset($response['user']['profile_url']), 'No profile set in response');
+        assertNotEmpty($response['user']['profile_url'], 'Profile is empty');
     }
 
     /**

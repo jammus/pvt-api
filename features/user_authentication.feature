@@ -26,4 +26,5 @@ Feature: User authentication
         When I attempt to authenticate myself
         Then I should get a 200 response code
         And I should receive an authorisation token
+        And I should receive a user object containing an id, "Existing User" and "existing@example.com"
         And I should receive a link to my profile url
