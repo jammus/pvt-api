@@ -224,7 +224,6 @@ class FeatureContext extends BehatContext
     {
         $reportData = $table->getHash();
         $this->postData['timestamp'] = $reportData[0]['timestamp'];
-        $this->postData['errors'] = $reportData[0]['errors'];
         $this->postData['response_times'] = $reportData[0]['rts'];
         $this->submitForm('/report');
     }
@@ -253,7 +252,7 @@ class FeatureContext extends BehatContext
         $expectedData = $table->getHash();
         $actualData = $this->jsonResponse();
         assertEquals($expectedData[0]['timestamp'], $actualData['timestamp']);
-        assertEquals($expectedData[0]['errors'], $actualData['errors']);
+        assertEquals($expectedData[0]['lapses'], $actualData['lapses']);
         assertEquals($expectedData[0]['average_response_time'], $actualData['average_response_time']);
     }
 

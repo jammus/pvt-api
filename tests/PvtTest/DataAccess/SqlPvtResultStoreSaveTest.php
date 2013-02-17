@@ -19,7 +19,7 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
 
     public function testInsertsWrappedInATransaction()
     {
-        $pvtResult = new PvtResult(10001, 1234567890, 5, array(1.1, 2.2, 3.3, 4.4, 5.5));
+        $pvtResult = new PvtResult(10001, 1234567890, array(1.1, 2.2, 3.3, 4.4, 5.5));
         $this->db->expects($this->never())
             ->method('insert');
         $this->store->save($pvtResult);
@@ -27,7 +27,7 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
 
     public function testInsertsTestDetailsDetails()
     {
-        $pvtResult = new PvtResult(10001, 1234567890, 5, array(1.1, 2.2, 3.3, 4.4, 5.5));
+        $pvtResult = new PvtResult(10001, 1234567890, array(1.1, 600.2, 3.3, 4.4, 5.5));
         $this->db->expects($this->at(0))
             ->method('insert')
             ->with(
@@ -35,8 +35,8 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
                 array(
                     'user_id' => 10001,
                     'timestamp' => 1234567890,
-                    'error_count' => 5,
-                    'average_response_time' => 3.3
+                    'error_count' => 1,
+                    'average_response_time' => 122.9
                 )
             );
         $this->store->save($pvtResult);
@@ -45,7 +45,7 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
 
     public function testThrowsUniqueConstraintViolationWhenAttemptingToInsertDuplicateRow()
     {
-        $pvtResult = new PvtResult(10001, 1234567890, 5, array(1.1, 2.2, 3.3, 4.4, 5.5));
+        $pvtResult = new PvtResult(10001, 1234567890, array(1.1, 2.2, 3.3, 4.4, 5.5));
         $this->db->expects($this->at(0))
             ->method('insert')
             ->will($this->throwException(DBALException::driverExceptionDuringQuery(new \Exception('unique key violation', 23505), 'sql')));
@@ -56,7 +56,7 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
 
     public function testRethrowsOtherDatabaseErrors()
     {
-        $pvtResult = new PvtResult(10001, 1234567890, 5, array(1.1, 2.2, 3.3, 4.4, 5.5));
+        $pvtResult = new PvtResult(10001, 1234567890, array(1.1, 2.2, 3.3, 4.4, 5.5));
         $this->db->expects($this->at(0))
             ->method('insert')
             ->will($this->throwException(new DBALException()));
@@ -67,7 +67,7 @@ class SqlPvtResultStoreSaveTest extends \PvtTest\PvtDatabaseTestCase
 
     public function testInsertsIndividualResponseTimes()
     {
-        $pvtResult = new PvtResult(10001, 1234567890, 5, array(1.1, 2.2, 3.3, 4.4, 5.5));
+        $pvtResult = new PvtResult(10001, 1234567890, array(1.1, 2.2, 3.3, 4.4, 5.5));
         $this->db->expects($this->at(1))
             ->method('insert')
             ->with(

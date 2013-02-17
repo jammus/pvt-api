@@ -61,10 +61,9 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
 
     $userId = $result->user()->id();
     $timestamp = $request->get('timestamp');
-    $errorCount = $request->get('errors');
     $responseTimes = explode(',', $request->get('response_times'));
 
-    $result = $submitPvtResult->execute($userId, $timestamp, $errorCount, $responseTimes);
+    $result = $submitPvtResult->execute($userId, $timestamp, $responseTimes);
 
     $responseCode = 201;
     if ($result->hasError(SubmitPvtResultResult::DUPLICATE_SUBMISSION)) {
@@ -141,7 +140,7 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
     return $app->json(
         array(
             'timestamp' => $pvtResult->date()->getTimestamp(),
-            'errors' => $pvtResult->errors(),
+            'lapses' => $pvtResult->errors(),
             'average_response_time' => $pvtResult->averageResponseTime()
         )
     );

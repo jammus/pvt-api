@@ -50,7 +50,6 @@ class SqlPvtResultStore implements PvtResultStore
         return new PvtResult(
             $rows[0]['user_id'],
             $rows[0]['timestamp'],
-            $rows[0]['error_count'],
             array_map(
                 function ($row) {
                     return $row['response_time'];
