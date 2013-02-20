@@ -54,7 +54,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
 
     $result = $authenticateWithAccessToken->execute($tokenString);
 
-    if (!$result->isOk()) {
+    if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Please supply a valid access token.');
         return $app->json($response, $response['error']['code']);
     }
@@ -85,7 +85,7 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
         return $app->json($response, $response['error']['code']);
     }
 
-    if (!$result->isOk()) {
+    if ( ! $result->isOk()) {
         $response = errorResponse(400, 'Please supply a valid email, password and name.');
         return $app->json($response, $response['error']['code']);
     }
@@ -114,7 +114,7 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
 
     $result = $authenticateWithPassword->execute($email, $password);
 
-    if (!$result->isOk()) {
+    if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Invalid email address or password. Please try again.');
         return $app->json($response, $response['error']['code']);
     }
