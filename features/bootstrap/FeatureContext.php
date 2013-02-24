@@ -22,8 +22,6 @@ class FeatureContext extends BehatContext
 
     private $postData;
 
-    private $ch;
-
     private $db;
 
     public function __construct(array $parameters)
@@ -57,17 +55,6 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @AfterScenario
-     */
-    public function closeConnection()
-    {
-        if ($this->ch) {
-            curl_close($this->ch);
-            $this->ch = null;
-        }
-    }
-
-    /**
      * @AfterScenario 
      */
     public function clearDB($event)
@@ -95,18 +82,41 @@ class FeatureContext extends BehatContext
 
     private function loadUrl($url)
     {
-        $this->ch = curl_init($this->BASE_URL . $url);
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-        $this->response = curl_exec($this->ch);
+        $ch = curl_init($this->BASE_URL . $url);
+        $this->doRequest($ch);
     }
 
     private function submitForm($url)
     {
-        $this->ch = curl_init($this->BASE_URL . $url);
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->ch, CURLOPT_POST, 1);
-        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postData);
-        $this->response = curl_exec($this->ch);
+        $ch = curl_init($this->BASE_URL . $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postData);
+        $this->doRequest($ch);
+    }
+
+    private function doRequest($ch)
+    {
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($ch);
+        
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+
+        $this->responseHeaders = array();
+        $this->response = substr($response, $headerSize);
+        $this->responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        $headers = substr($response, 0, $headerSize);
+        $headers = explode("\r\n", str_replace("\r\n\r\n", '', $headers));
+
+        array_shift($headers);
+        foreach ($headers as $header) {
+            preg_match('#(.*?)\:\s(.*)#', $header, $matches);
+            $this->responseHeaders[$matches[1]] = $matches[2];
+        }
+
+        curl_close($ch);
     }
 
     /**
@@ -114,8 +124,7 @@ class FeatureContext extends BehatContext
      */
     public function iShouldGetAResponseCode($expectedResponseCode)
     {
-        $responseCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
-        assertEquals($expectedResponseCode, $responseCode);
+        assertEquals($expectedResponseCode, $this->responseCode);
     }
 
     /**
@@ -234,7 +243,7 @@ class FeatureContext extends BehatContext
      */
     public function iShouldBeDirectedToTheReportAt($reportPattern)
     {
-        assertRegExp($reportPattern, $this->response, '"' . $this->response . '" does not match: "' . $reportPattern . '"');
+        assertRegExp($reportPattern, $this->responseHeaders['location'], '"' . $this->response . '" does not match: "' . $reportPattern . '"');
     }
 
     /**
@@ -242,7 +251,7 @@ class FeatureContext extends BehatContext
      */
     public function iViewThePvtReport()
     {
-        $this->loadUrl($this->response);
+        $this->loadUrl($this->responseHeaders['location']);
     }
 
     /**

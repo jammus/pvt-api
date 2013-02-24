@@ -70,7 +70,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
     if ($result->hasError(SubmitPvtResultResult::DUPLICATE_SUBMISSION)) {
         $responseCode = 301;
     }
-    return new Response($result->pvtResult()->reportUrl(), $responseCode);
+    return $app->json(array(), $responseCode, array('Location' => $result->pvtResult()->reportUrl()));
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
