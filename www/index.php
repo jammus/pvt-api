@@ -56,7 +56,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
 
     if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Please supply a valid access token.');
-        return $app->json($response, $response['error']['code']);
+        return $app->json($response, $response['meta']['code']);
     }
 
     $userId = $result->user()->id();
@@ -70,7 +70,20 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
     if ($result->hasError(SubmitPvtResultResult::DUPLICATE_SUBMISSION)) {
         $responseCode = 301;
     }
-    return $app->json(array(), $responseCode, array('Location' => $result->pvtResult()->reportUrl()));
+    return $app->json(
+        array(
+            'meta' => array(
+                'code' => $responseCode
+            ),
+            'response' => array(
+                'location' => $result->pvtResult()->reportUrl()
+            ),
+        ),
+        $responseCode,
+        array(
+            'Location' => $result->pvtResult()->reportUrl()
+        )
+    );
 });
 
 $app->post('/users', function (Silex\Application $app, Request $request) use ($createUser, $authenticateWithPassword) {
@@ -82,12 +95,12 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
 
     if ($result->hasError(CreateUserResult::DUPLICATE_USER)) {
         $response = errorResponse(409, 'That email address has already been used to register an account.');
-        return $app->json($response, $response['error']['code']);
+        return $app->json($response, $response['meta']['code']);
     }
 
     if ( ! $result->isOk()) {
         $response = errorResponse(400, 'Please supply a valid email, password and name.');
-        return $app->json($response, $response['error']['code']);
+        return $app->json($response, $response['meta']['code']);
     }
 
     $result = $authenticateWithPassword->execute($email, $password);
@@ -97,12 +110,17 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
 
     return $app->json(
         array(
-            'access_token' => $accessToken->token(),
-            'user' => array(
-                'id' => $user->id(),
-                'name' => $user->name(),
-                'email' => $user->email(),
-                'profile_url' => $user->profileUrl(),
+            'meta' => array(
+                'code' => 200,
+            ),
+            'response' => array(
+                'access_token' => $accessToken->token(),
+                'user' => array(
+                    'id' => $user->id(),
+                    'name' => $user->name(),
+                    'email' => $user->email(),
+                    'profile_url' => $user->profileUrl(),
+                ),
             ),
         )
     );
@@ -116,7 +134,7 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
 
     if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Invalid email address or password. Please try again.');
-        return $app->json($response, $response['error']['code']);
+        return $app->json($response, $response['meta']['code']);
     }
 
     $accessToken = $result->accessToken();
@@ -124,12 +142,17 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
 
     return $app->json(
         array(
-            'access_token' => $accessToken->token(),
-            'user' => array(
-                'id' => $user->id(),
-                'name' => $user->name(),
-                'email' => $user->email(),
-                'profile_url' => $user->profileUrl(),
+            'meta' => array(
+                'code' => 200,
+            ),
+            'response' => array(
+                'access_token' => $accessToken->token(),
+                'user' => array(
+                    'id' => $user->id(),
+                    'name' => $user->name(),
+                    'email' => $user->email(),
+                    'profile_url' => $user->profileUrl(),
+                ),
             ),
         )
     );
@@ -140,10 +163,17 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
 
     return $app->json(
         array(
-            'timestamp' => $pvtResult->date()->getTimestamp(),
-            'errors' => $pvtResult->errors(),
-            'lapses' => $pvtResult->lapses(),
-            'average_response_time' => $pvtResult->averageResponseTime(),
+            'meta' => array(
+                'code' => 200,
+            ),
+            'response' => array(
+                'report' => array(
+                    'timestamp' => $pvtResult->date()->getTimestamp(),
+                    'errors' => $pvtResult->errors(),
+                    'lapses' => $pvtResult->lapses(),
+                    'average_response_time' => $pvtResult->averageResponseTime(),
+                ),
+            ),
         )
     );
 });
@@ -151,9 +181,9 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
 function errorResponse($code, $message)
 {
     return array(
-        'error' => array(
+        'meta' => array(
             'code' => $code,
-            'message' => $message
+            'message' => $message,
         )
     );
 }

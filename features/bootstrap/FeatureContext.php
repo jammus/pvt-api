@@ -124,7 +124,9 @@ class FeatureContext extends BehatContext
      */
     public function iShouldGetAResponseCode($expectedResponseCode)
     {
+        $response = $this->jsonResponse();
         assertEquals($expectedResponseCode, $this->responseCode);
+        assertEquals($expectedResponseCode, $response['meta']['code']);
     }
 
     /**
@@ -141,8 +143,8 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveAnAuthorisationToken()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['access_token']), 'No auth token set in response');
-        assertNotEmpty($response['access_token'], 'Auth token is empty');
+        assertTrue(isset($response['response']['access_token']), 'No auth token set in response');
+        assertNotEmpty($response['response']['access_token'], 'Auth token is empty');
     }
     
     /**
@@ -151,7 +153,7 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveAUserObjectContainingAnd($name, $email)
     {
         $response = $this->jsonResponse();
-        $user = $response['user'];
+        $user = $response['response']['user'];
         assertNotNull($user, 'No user in response');
         assertInternalType('integer', $user['id']);
         assertEquals($name, $user['name']);
@@ -164,8 +166,9 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveALinkToMyProfileUrl()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['user']['profile_url']), 'No profile set in response');
-        assertNotEmpty($response['user']['profile_url'], 'Profile is empty');
+        $user = $response['response']['user'];
+        assertTrue(isset($user['profile_url']), 'No profile set in response');
+        assertNotEmpty($user['profile_url'], 'Profile is empty');
     }
 
     /**
@@ -186,7 +189,7 @@ class FeatureContext extends BehatContext
     public function iShouldSeeTheErrorMessage($message)
     {
         $response = $this->jsonResponse();
-        assertEquals($message, $response['error']['message']);
+        assertEquals($message, $response['meta']['message']);
     }
 
     /**
@@ -244,6 +247,9 @@ class FeatureContext extends BehatContext
     public function iShouldBeDirectedToTheReportAt($reportPattern)
     {
         assertRegExp($reportPattern, $this->responseHeaders['location'], '"' . $this->response . '" does not match: "' . $reportPattern . '"');
+        $response = $this->jsonResponse();
+        $location = $response['response']['location'];
+        assertRegExp($reportPattern, $location, '"' . $location . '" does not match: "' . $reportPattern . '"');
     }
 
     /**
@@ -260,7 +266,8 @@ class FeatureContext extends BehatContext
     public function iShouldSeeTheReportContains(TableNode $table)
     {
         $expectedData = $table->getHash();
-        $actualData = $this->jsonResponse();
+        $response = $this->jsonResponse();
+        $actualData = $response['response']['report'];
         assertEquals($expectedData[0]['timestamp'], $actualData['timestamp']);
         assertEquals($expectedData[0]['errors'], $actualData['errors']);
         assertEquals($expectedData[0]['lapses'], $actualData['lapses']);
