@@ -3,7 +3,9 @@
         "behat/behat": "2.4.*@stable",
         "silex/silex": "1.0.*@dev",
         "doctrine/dbal": "2.*",
-        "hautelook/phpass": "dev-master"
+        "hautelook/phpass": "dev-master",
+        "bshaffer/oauth2-server-php": "v0.3",
+        "bshaffer/oauth2-server-httpfoundation-bridge": "dev-master"
     },
 
     "require-dev": {
