@@ -4,8 +4,7 @@
         "silex/silex": "1.0.*@dev",
         "doctrine/dbal": "2.*",
         "hautelook/phpass": "dev-master",
-        "bshaffer/oauth2-server-php": "v0.3",
-        "bshaffer/oauth2-server-httpfoundation-bridge": "dev-master"
+        "friendsofsymfony/oauth2-php": "v1.0.5"
     },
 
     "require-dev": {
