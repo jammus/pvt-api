@@ -58,6 +58,13 @@ class OAuth2TokenStorage implements IOAuth2Storage, IOAuth2GrantUser
     public function checkUserCredentials(IOAuth2Client $client, $username, $password)
     {
         $user = $this->userStore->fetchByEmail($username);
-        return $user && $user->checkPassword($password);
+
+        if ( ! $user || ! $user->checkPassword($password)) {
+            return false;
+        }
+
+        return array(
+            'data' => $user->id()
+        );
     }
 }

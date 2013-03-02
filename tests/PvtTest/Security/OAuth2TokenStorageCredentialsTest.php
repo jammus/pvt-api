@@ -30,7 +30,14 @@ class OAuth2TokenStorageCredentialsTest extends OAuth2TokenStorageTestCase
     public function testReturnsTrueWhenPasswordsMatch()
     {
         $this->whenUsersPasswordIs('hunter2');
-        $this->assertTrue($this->storage->checkUserCredentials(new OAuth2Client(), 'user@example.com', 'hunter2'));
+        $this->assertTrue($this->storage->checkUserCredentials(new OAuth2Client(), 'user@example.com', 'hunter2') !== false);
+    }
+
+    public function testReturnsUserIdInDataWhenPasswordsMatch()
+    {
+        $this->whenUsersPasswordIs('hunter2');
+        $result = $this->storage->checkUserCredentials(new OAuth2Client(), 'user@example.com', 'hunter2');
+        $this->assertEquals(10001, $result['data']);
     }
 
     public function testReturnsFalseWhenPasswordsDoNotMatch()
@@ -41,7 +48,7 @@ class OAuth2TokenStorageCredentialsTest extends OAuth2TokenStorageTestCase
 
     private function whenUsersPasswordIs($password)
     {
-        $user = new User(0, '', '', Password::fromPlainText($password));
+        $user = new User(10001, '', '', Password::fromPlainText($password));
 
         $this->userStore->expects($this->any())
             ->method('fetchByEmail')
