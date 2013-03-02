@@ -124,36 +124,6 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     );
 });
 
-$app->post('/login', function (Silex\Application $app, Request $request) use ($authenticateWithPassword) {
-    $email = $request->get('email');
-    $password = $request->get('password');
-
-    $result = $authenticateWithPassword->execute($email, $password);
-
-    if ( ! $result->isOk()) {
-        $response = errorResponse(401, 'Invalid email address or password. Please try again.');
-        return $app->json($response, $response['code']);
-    }
-
-    $accessToken = $result->accessToken();
-    $user = $result->user();
-
-    return $app->json(
-        array(
-            'code' => 200,
-            'response' => array(
-                'access_token' => $accessToken->token(),
-                'user' => array(
-                    'id' => $user->id(),
-                    'name' => $user->name(),
-                    'email' => $user->email(),
-                    'profile_url' => $user->profileUrl(),
-                ),
-            ),
-        )
-    );
-});
-
 $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app, Request $request, $userId, $timestamp) use ($pvtResultStore) {
     $pvtResult = $pvtResultStore->fetchByUserIdAndTimestamp($userId, $timestamp);
 
