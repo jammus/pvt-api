@@ -22,6 +22,8 @@ class FeatureContext extends BehatContext
 
     private $postData;
 
+    private $requestHeaders;
+
     private $db;
 
     public function __construct(array $parameters)
@@ -50,6 +52,12 @@ class FeatureContext extends BehatContext
             'USERLOOKUP', function ($email, $phabric) {
                 $users = $phabric->getEntity('users');
                 return $users->getNamedItemId($email);
+            }
+        );
+        $this->phabric->addDataTransformation(
+            'AVERAGETIMES', function ($times, $phabric) {
+                $times = explode(',', $times);
+                return array_sum($times) / count($times);
             }
         );
     }
@@ -98,6 +106,7 @@ class FeatureContext extends BehatContext
     {
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getRequestHeaders());
         
         $response = curl_exec($ch);
         
@@ -193,7 +202,7 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Given /^the following accounts exist:$/
+     * @Given /^the following accounts? exists?:$/
      */
     public function theFollowingAccountsExist(TableNode $table)
     {
@@ -210,15 +219,71 @@ class FeatureContext extends BehatContext
      */
     public function iHaveSuppliedTheAccessToken($accessToken)
     {
-        $this->postData['access_token'] = $accessToken;
+        $this->setRequestHeader('Authorization', 'Bearer ' . $accessToken);
+    }
+
+    private function setRequestHeader($name, $value)
+    {
+        if ( ! $this->requestHeaders) {
+            $this->requestHeaders = array();
+        }
+        $this->requestHeaders[$name] = $value;
+    }
+
+    private function getRequestHeaders()
+    {
+        $headers = array();
+
+        if ( ! $this->requestHeaders) {
+            return $headers;
+        }
+
+        foreach ($this->requestHeaders as $key => $value) {
+            $headers[] = $key . ': ' . $value;
+        }
+
+        return $headers;
     }
 
     /**
-     * @Given /^the following access tokens exist:$/
+     * @Given /^the following access tokens? exists?:$/
      */
     public function theFollowAccessTokensExist(TableNode $table)
     {
         $this->phabric->insertFromTable('access_tokens', $table);
+    }
+
+    /**
+     * @Given /^the following report exists:$/
+     */
+    public function theFollowingReportExists(TableNode $table)
+    {
+        $this->phabric->insertFromTable('pvt_results', $table);
+        $timesTable = new TableNode();
+        $reports = $table->getHash();
+        foreach ($reports as $report) {
+            $times = explode(',', $report['response_times']);
+            $sequence = 0;
+            $timesTable->addRow(
+                array(
+                    'user',
+                    'timestamp',
+                    'sequence',
+                    'response_time'
+                )
+            );
+            foreach ($times as $time) {
+                $timesTable->addRow(
+                    array(
+                        $report['user'],
+                        $report['timestamp'],
+                        ++$sequence,
+                        $time
+                    )
+                );
+            }
+        }
+        $this->phabric->insertFromTable('pvt_results_response_times', $timesTable);
     }
 
     /**
@@ -293,5 +358,23 @@ class FeatureContext extends BehatContext
         $this->postData['grant_type'] = 'password';
         $this->postData['client_id'] = 'android';
         $this->submitForm('/token');
+    }
+
+    /**
+     * @When /^I view the report "([^"]*)" for user "([^"]*)"$/
+     */
+    public function iViewTheReportForUser($timestamp, $email)
+    {
+        $users = $this->phabric->getEntity('users');
+        $userId = $users->getNamedItemId($email);
+        $this->loadUrl("/users/$userId/report/$timestamp");
+    }
+
+    /**
+     * @Given /^I should get a \'([^\']*)\' header with value \'([^\']*)\'$/
+     */
+    public function iShouldGetAHeaderWithValue($name, $value)
+    {
+        assertEquals($value, $this->responseHeaders[$name]);
     }
 }

@@ -7,13 +7,15 @@ Feature: Result submission
         Given I have not supplied my credentials
         When I submit my PVT result
         Then I should get a 401 response code
-        And I should see the error message "Please supply a valid access token."
+        And I should get a 'WWW-Authenticate' header with value 'Bearer realm="pvt"'
+        And I should see the error message "Your request could not be authorised."
 
     Scenario: An de-authorised user
         Given I have supplied the access token "abcdefgh"
         When I submit my PVT result
         Then I should get a 401 response code
-        And I should see the error message "Please supply a valid access token."
+        And I should get a 'WWW-Authenticate' header with value 'Bearer realm="pvt"'
+        And I should see the error message "Your request could not be authorised."
 
     Scenario: An authorised user
         Given the following accounts exist:
@@ -58,6 +60,7 @@ Feature: Result submission
             | timestamp             | errors    | rts                                 |
             | 1234567890            | 2         | 402.50,523.87,327.90,678.91,398.63  |
         When I view the PVT report
+        And I have supplied the access token "abcdefgh"
         Then I should get a 200 response code
         And I should see the report contains:
             | timestamp         | average_response_time | errors    | lapses    |

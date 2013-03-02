@@ -59,8 +59,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
     $result = $authenticateWithAccessToken->execute($tokenString);
 
     if ( ! $result->isOk()) {
-        $response = errorResponse(401, 'Please supply a valid access token.');
-        return $app->json($response, $response['code']);
+        return notAuthorised($app);
     }
 
     $userId = $result->user()->id();
@@ -96,12 +95,12 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     $result = $createUser->execute($name, $email, $password);
 
     if ($result->hasError(CreateUserResult::DUPLICATE_USER)) {
-        $response = errorResponse(409, 'That email address has already been used to register an account.');
+        $response = errorResponse(409, 'duplicate_user', 'That email address has already been used to register an account.');
         return $app->json($response, $response['code']);
     }
 
     if ( ! $result->isOk()) {
-        $response = errorResponse(400, 'Please supply a valid email, password and name.');
+        $response = errorResponse(400, 'invalid_request', 'Please supply a valid email, password and name.');
         return $app->json($response, $response['code']);
     }
 
@@ -124,7 +123,15 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
     );
 });
 
-$app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app, Request $request, $userId, $timestamp) use ($pvtResultStore) {
+$app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app, Request $request, $userId, $timestamp) use ($pvtResultStore, $oAuth2Server, $authenticateWithAccessToken) {
+    $tokenString = $oAuth2Server->getBearerToken($request);
+
+    $result = $authenticateWithAccessToken->execute($tokenString);
+
+    if ( ! $result->isOk() || $result->user()->id() != $userId) {
+        return notAuthorised($app);
+    }
+
     $pvtResult = $pvtResultStore->fetchByUserIdAndTimestamp($userId, $timestamp);
 
     return $app->json(
@@ -160,38 +167,43 @@ $app->post('/token', function (Silex\Application $app, Request $request) use ($o
     }
     catch (\OAuth2\OAuth2ServerException $e) {
         if ($e->getMessage() === 'invalid_grant') {
-            $response = oAuthErrorReponse(400, $e->getMessage(), 'Invalid email address or password. Please try again.');
+            $response = errorResponse(400, $e->getMessage(), 'Invalid email address or password. Please try again.');
             return $app->json($response, $response['code']);
         }
-        $response = oAuthErrorReponse(400, $e->getMessage(), $e->getDescription());
+        $response = errorResponse(400, $e->getMessage(), $e->getDescription());
         return $app->json($response, $response['code']);
     }
     catch (Exception $e) {
-        $response = errorResponse(500, 'Unexpected error');
+        $response = errorResponse(500, null, 'Unexpected error');
         return $app->json($response, $response['code']);
     }
 });
 
-function errorResponse($code, $message)
+function errorResponse($code, $message = null, $description = null)
 {
-    return array(
-        'code' => $code,
-        'error_description' => $message,
-    );
-}
+    $response = array('code' => $code);
 
-function oAuthErrorReponse($code, $message, $description = null)
-{
-    $response = array(
-        'code' => $code,
-        'error' => $message
-    );
+    if ($message !== null) {
+        $response['error'] = $message;
+    }
 
-    if ($description) {
+    if ($description !== null) {
         $response['error_description'] = $description;
     }
 
     return $response;
+}
+
+function notAuthorised($app)
+{
+    $response = errorResponse(401, 'access_denied', 'Your request could not be authorised.');
+    return $app->json(
+        $response,
+        $response['code'],
+        array(
+            'WWW-Authenticate' => 'Bearer realm="pvt"'
+        )
+    );
 }
 
 $app->run();

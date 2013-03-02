@@ -23,3 +23,22 @@ default:
               user: 'user_id'
             dataTransformations:
               user_id: USERLOOKUP
+          pvt_results:
+            tableName: 'pvt_results'
+            primaryKey: null
+            nameCol: null
+            nameTransformations:
+              user: 'user_id'
+              errors: 'error_count'
+              response_times: 'average_response_time'
+            dataTransformations:
+              user_id: USERLOOKUP
+              average_response_time: AVERAGETIMES
+          pvt_results_response_times:
+            tableName: 'pvt_results_response_times'
+            primaryKey: null
+            nameCol: null
+            nameTransformations:
+              user: 'user_id'
+            dataTransformations:
+              user_id: USERLOOKUP
