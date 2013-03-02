@@ -3,17 +3,22 @@
 namespace Pvt\Security;
 
 use OAuth2\IOAuth2Storage;
+use OAuth2\IOAuth2GrantUser;
 use OAuth2\Model\IOAuth2Client;
 
 use Pvt\Core\AccessToken;
 use Pvt\DataAccess\AccessTokenStore;
+use Pvt\DataAccess\UserStore;
 
-class OAuth2TokenStorage implements IOAuth2Storage
+class OAuth2TokenStorage implements IOAuth2Storage, IOAuth2GrantUser
 {
+    private $userStore;
+
     private $accessTokenStore;
 
-    public function __construct(AccessTokenStore $accessTokenStore)
+    public function __construct(UserStore $userStore, AccessTokenStore $accessTokenStore)
     {
+        $this->userStore = $userStore;
         $this->accessTokenStore = $accessTokenStore;
     }
 
@@ -49,5 +54,11 @@ class OAuth2TokenStorage implements IOAuth2Storage
 	public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type)
     {
         return true;
+    }
+    
+    public function checkUserCredentials(IOAuth2Client $client, $username, $password)
+    {
+        $user = $this->userStore->fetchByEmail($username);
+        return $user && $user->checkPassword($password);
     }
 }

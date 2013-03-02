@@ -4,20 +4,9 @@ namespace PvtTest\Security;
 
 use Pvt\Core\AccessToken;
 use Pvt\Security\OAuth2Client;
-use Pvt\Security\OAuth2TokenStorage;
 
-class OAuth2TokenStorageTest extends \PvtTest\PvtTestCase
+class OAuth2TokenStorageStorageTest extends OAuth2TokenStorageTestCase
 {
-    private $accessTokenStore;
-
-    private $storage;
-
-    public function setup()
-    {
-        $this->accessTokenStore = $this->getMock('Pvt\DataAccess\AccessTokenStore');
-        $this->storage = new OAuth2TokenStorage($this->accessTokenStore);
-    }
-
     public function testAllGrantTypesAreSupportedForAllClients()
     {
         $client = $this->getMock('\OAuth2\Model\IOAuth2Client');
