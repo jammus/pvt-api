@@ -6,7 +6,7 @@ Feature: User authentication
     Scenario: Non-existant account
         Given I have supplied "incorrect-email@example.com" and "password"
         When I attempt to authenticate myself
-        Then I should get a 401 response code
+        Then I should get a 400 response code
         And I should see the error message "Invalid email address or password. Please try again."
 
     Scenario: Incorrect password
@@ -15,7 +15,7 @@ Feature: User authentication
             | existing@example.com  | $2a$10$Nfop43.5bbzmndx2b1cTgOK4OOIE3qnV9fbZRwifUQX91rMu.zLjW  | Existing User |
         And I have supplied "existing@example.com" and "pissword"
         When I attempt to authenticate myself
-        Then I should get a 401 response code
+        Then I should get a 400 response code
         And I should see the error message "Invalid email address or password. Please try again."
 
     Scenario: Successful authentication
@@ -24,7 +24,4 @@ Feature: User authentication
             | existing@example.com  | $2a$10$Nfop43.5bbzmndx2b1cTgOK4OOIE3qnV9fbZRwifUQX91rMu.zLjW  | Existing User |
         And I have supplied "existing@example.com" and "password"
         When I attempt to authenticate myself
-        Then I should get a 200 response code
-        And I should receive an authorisation token
-        And I should receive a user object containing an id, "Existing User" and "existing@example.com"
-        And I should receive a link to my profile url
+        Then I should receive an authorisation token

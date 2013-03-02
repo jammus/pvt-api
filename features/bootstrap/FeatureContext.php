@@ -126,7 +126,7 @@ class FeatureContext extends BehatContext
     {
         $response = $this->jsonResponse();
         assertEquals($expectedResponseCode, $this->responseCode);
-        assertEquals($expectedResponseCode, $response['meta']['code']);
+        assertEquals($expectedResponseCode, $response['code']);
     }
 
     /**
@@ -143,8 +143,8 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveAnAuthorisationToken()
     {
         $response = $this->jsonResponse();
-        assertTrue(isset($response['response']['access_token']), 'No auth token set in response');
-        assertNotEmpty($response['response']['access_token'], 'Auth token is empty');
+        assertTrue(isset($response['access_token']), 'No auth token set in response');
+        assertNotEmpty($response['access_token'], 'Auth token is empty');
     }
     
     /**
@@ -189,7 +189,7 @@ class FeatureContext extends BehatContext
     public function iShouldSeeTheErrorMessage($message)
     {
         $response = $this->jsonResponse();
-        assertEquals($message, $response['meta']['message']);
+        assertEquals($message, $response['error_description']);
     }
 
     /**
@@ -280,7 +280,7 @@ class FeatureContext extends BehatContext
     public function iHaveSuppliedAnd($email, $password)
     {
         $this->postData = array(
-            'email' => $email,
+            'username' => $email,
             'password' => $password,
         );
     }
@@ -290,6 +290,8 @@ class FeatureContext extends BehatContext
      */
     public function iAttemptToAuthenticateMyself()
     {
-        $this->submitForm('/login');
+        $this->postData['grant_type'] = 'password';
+        $this->postData['client_id'] = 'android';
+        $this->submitForm('/token');
     }
 }

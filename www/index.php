@@ -16,6 +16,7 @@ use Pvt\Interactors\AuthenticateUserWithAccessToken;
 use Pvt\Interactors\AuthenticateUserWithPassword;
 use Pvt\Interactors\SubmitPvtResult;
 use Pvt\Interactors\SubmitPvtResultResult;
+use Pvt\Security\OAuth2TokenStorage;
 
 $services = json_decode(getenv('VCAP_SERVICES'), true);
 $dbConfig = $services ? $services['postgresql-9.1'][0]['credentials'] : array(
@@ -45,6 +46,9 @@ $pvtResultStore = new SqlPvtResultStore($connection);
 $authenticateWithAccessToken = new AuthenticateUserWithAccessToken($userStore, $tokenStore);
 $authenticateWithPassword = new AuthenticateUserWithPassword($userStore, $tokenStore);
 $submitPvtResult = new SubmitPvtResult($pvtResultStore);
+
+$oAuth2Storage = new OAuth2TokenStorage($userStore, $tokenStore);
+$oAuth2Server = new OAuth2\OAuth2($oAuth2Storage, array());
 
 $app = new \Silex\Application();
 $app['debug'] = true;
@@ -178,14 +182,44 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
     );
 });
 
+$app->post('/token', function (Silex\Application $app, Request $request) use ($oAuth2Server) {
+    try {
+        return $oAuth2Server->grantAccessToken($request);
+    }
+    catch (\OAuth2\OAuth2ServerException $e) {
+        if ($e->getMessage() === 'invalid_grant') {
+            $response = oAuthErrorReponse(400, $e->getMessage(), 'Invalid email address or password. Please try again.');
+            return $app->json($response, $response['code']);
+        }
+        $response = oAuthErrorReponse(400, $e->getMessage(), $e->getDescription());
+        return $app->json($response, $response['code']);
+    }
+    catch (Exception $e) {
+        $response = errorResponse(500, 'Unexpected error');
+        return $app->json($response, $response['meta']['code']);
+    }
+});
+
 function errorResponse($code, $message)
 {
     return array(
-        'meta' => array(
-            'code' => $code,
-            'message' => $message,
-        )
+        'code' => $code,
+        'message' => $message,
     );
+}
+
+function oAuthErrorReponse($code, $message, $description = null)
+{
+    $response = array(
+        'code' => $code,
+        'error' => $message
+    );
+
+    if ($description) {
+        $response['error_description'] = $description;
+    }
+
+    return $response;
 }
 
 $app->run();
