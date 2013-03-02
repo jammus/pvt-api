@@ -142,9 +142,21 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
     );
 });
 
-$app->post('/token', function (Silex\Application $app, Request $request) use ($oAuth2Server) {
+$app->post('/token', function (Silex\Application $app, Request $request) use ($oAuth2Server, $userStore, $tokenStore) {
     try {
-        return $oAuth2Server->grantAccessToken($request);
+        $response = $oAuth2Server->grantAccessToken($request);
+        $content = json_decode($response->getContent(), true);
+        $token = $content['access_token'];
+        $accessToken = $tokenStore->fetchByTokenString($token);
+        $user = $userStore->fetchById($accessToken->userId());
+        $content['user'] = array(
+            'id' => $user->id(),
+            'name' => $user->name(),
+            'email' => $user->email(),
+            'profile_url' => $user->profileUrl()
+        );
+        $response->setContent(json_encode($content));
+        return $response;
     }
     catch (\OAuth2\OAuth2ServerException $e) {
         if ($e->getMessage() === 'invalid_grant') {

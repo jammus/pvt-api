@@ -25,3 +25,5 @@ Feature: User authentication
         And I have supplied "existing@example.com" and "password"
         When I attempt to authenticate myself
         Then I should receive an authorisation token
+        And I should receive a user object containing an id, "Existing User" and "existing@example.com"
+        And I should receive a link to my profile url
