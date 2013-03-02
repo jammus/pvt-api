@@ -153,7 +153,7 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveAUserObjectContainingAnd($name, $email)
     {
         $response = $this->jsonResponse();
-        $user = $response['response']['user'];
+        $user = $response['user'];
         assertNotNull($user, 'No user in response');
         assertInternalType('integer', $user['id']);
         assertEquals($name, $user['name']);
@@ -166,7 +166,7 @@ class FeatureContext extends BehatContext
     public function iShouldReceiveALinkToMyProfileUrl()
     {
         $response = $this->jsonResponse();
-        $user = $response['response']['user'];
+        $user = $response['user'];
         assertTrue(isset($user['profile_url']), 'No profile set in response');
         assertNotEmpty($user['profile_url'], 'Profile is empty');
     }
@@ -246,7 +246,7 @@ class FeatureContext extends BehatContext
      */
     public function iShouldBeDirectedToTheReportAt($reportPattern)
     {
-        assertRegExp($reportPattern, $this->responseHeaders['location'], '"' . $this->response . '" does not match: "' . $reportPattern . '"');
+        assertRegExp($reportPattern, $this->responseHeaders['Location'], '"' . $this->response . '" does not match: "' . $reportPattern . '"');
         $response = $this->jsonResponse();
         $location = $response['response']['location'];
         assertRegExp($reportPattern, $location, '"' . $location . '" does not match: "' . $reportPattern . '"');
@@ -257,7 +257,7 @@ class FeatureContext extends BehatContext
      */
     public function iViewThePvtReport()
     {
-        $this->loadUrl($this->responseHeaders['location']);
+        $this->loadUrl($this->responseHeaders['Location']);
     }
 
     /**

@@ -60,7 +60,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
 
     if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Please supply a valid access token.');
-        return $app->json($response, $response['meta']['code']);
+        return $app->json($response, $response['code']);
     }
 
     $userId = $result->user()->id();
@@ -76,9 +76,7 @@ $app->post('/report', function (Silex\Application $app, Request $request) use ($
     }
     return $app->json(
         array(
-            'meta' => array(
-                'code' => $responseCode
-            ),
+            'code' => $responseCode,
             'response' => array(
                 'location' => $result->pvtResult()->reportUrl()
             ),
@@ -99,12 +97,12 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
 
     if ($result->hasError(CreateUserResult::DUPLICATE_USER)) {
         $response = errorResponse(409, 'That email address has already been used to register an account.');
-        return $app->json($response, $response['meta']['code']);
+        return $app->json($response, $response['code']);
     }
 
     if ( ! $result->isOk()) {
         $response = errorResponse(400, 'Please supply a valid email, password and name.');
-        return $app->json($response, $response['meta']['code']);
+        return $app->json($response, $response['code']);
     }
 
     $result = $authenticateWithPassword->execute($email, $password);
@@ -114,17 +112,13 @@ $app->post('/users', function (Silex\Application $app, Request $request) use ($c
 
     return $app->json(
         array(
-            'meta' => array(
-                'code' => 200,
-            ),
-            'response' => array(
-                'access_token' => $accessToken->token(),
-                'user' => array(
-                    'id' => $user->id(),
-                    'name' => $user->name(),
-                    'email' => $user->email(),
-                    'profile_url' => $user->profileUrl(),
-                ),
+            'code' => 200,
+            'access_token' => $accessToken->token(),
+            'user' => array(
+                'id' => $user->id(),
+                'name' => $user->name(),
+                'email' => $user->email(),
+                'profile_url' => $user->profileUrl(),
             ),
         )
     );
@@ -138,7 +132,7 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
 
     if ( ! $result->isOk()) {
         $response = errorResponse(401, 'Invalid email address or password. Please try again.');
-        return $app->json($response, $response['meta']['code']);
+        return $app->json($response, $response['code']);
     }
 
     $accessToken = $result->accessToken();
@@ -146,9 +140,7 @@ $app->post('/login', function (Silex\Application $app, Request $request) use ($a
 
     return $app->json(
         array(
-            'meta' => array(
-                'code' => 200,
-            ),
+            'code' => 200,
             'response' => array(
                 'access_token' => $accessToken->token(),
                 'user' => array(
@@ -167,9 +159,7 @@ $app->get('/users/{userId}/report/{timestamp}', function (Silex\Application $app
 
     return $app->json(
         array(
-            'meta' => array(
-                'code' => 200,
-            ),
+            'code' => 200,
             'response' => array(
                 'report' => array(
                     'timestamp' => $pvtResult->date()->getTimestamp(),
@@ -196,7 +186,7 @@ $app->post('/token', function (Silex\Application $app, Request $request) use ($o
     }
     catch (Exception $e) {
         $response = errorResponse(500, 'Unexpected error');
-        return $app->json($response, $response['meta']['code']);
+        return $app->json($response, $response['code']);
     }
 });
 
@@ -204,7 +194,7 @@ function errorResponse($code, $message)
 {
     return array(
         'code' => $code,
-        'message' => $message,
+        'error_description' => $message,
     );
 }
 
