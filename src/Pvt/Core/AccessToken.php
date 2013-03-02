@@ -4,9 +4,9 @@ namespace Pvt\Core;
 
 class AccessToken
 {
-    private $userId;
+    protected $userId;
 
-    private $token;
+    protected $token;
 
     const EPOCH = 1356645562;
 
