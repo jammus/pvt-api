@@ -53,8 +53,8 @@ $oAuth2Server = new OAuth2\OAuth2($oAuth2Storage, array());
 $app = new \Silex\Application();
 $app['debug'] = true;
 
-$app->post('/report', function (Silex\Application $app, Request $request) use ($authenticateWithAccessToken, $submitPvtResult) {
-    $tokenString = $request->get('access_token');
+$app->post('/report', function (Silex\Application $app, Request $request) use ($oAuth2Server, $authenticateWithAccessToken, $submitPvtResult) {
+    $tokenString = $oAuth2Server->getBearerToken($request);
 
     $result = $authenticateWithAccessToken->execute($tokenString);
 
