@@ -29,8 +29,7 @@ class OAuth2TokenStorage implements IOAuth2Storage, IOAuth2GrantUser
 
 	public function checkClientCredentials(IOAuth2Client $client, $client_secret = NULL)
     {
-        return $client->getPublicId() === 'android' &&
-            $client_secret === '8hska3hjo320iola-28ihj2/23973owld';
+        return $client->getPublicId() === 'android';
     }
 
 	public function getAccessToken($oauth_token)

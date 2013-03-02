@@ -83,16 +83,10 @@ class OAuth2TokenStorageStorageTest extends OAuth2TokenStorageTestCase
         $this->assertFalse($this->storage->checkClientCredentials($client));
     }
 
-    public function testClientCredentialsAreCorrectWhenSecretMatchesAndroidSecret()
+    public function testClientCredentialsAreCorrectWhenClientIsAndroid()
     {
         $androidClient = new OAuth2Client();
-        $this->assertTrue($this->storage->checkClientCredentials($androidClient, '8hska3hjo320iola-28ihj2/23973owld'));
-    }
-
-    public function testClientCredentialsAreIncorrectWhenSecretDoesNotMatchAndroidSecret()
-    {
-        $androidClient = new OAuth2Client();
-        $this->assertFalse($this->storage->checkClientCredentials($androidClient, 'some bulshit'));
+        $this->assertTrue($this->storage->checkClientCredentials($androidClient));
     }
 
     private function whenDataStoreReturns($accessToken)
