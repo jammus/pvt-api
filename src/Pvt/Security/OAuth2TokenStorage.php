@@ -27,12 +27,12 @@ class OAuth2TokenStorage implements IOAuth2Storage, IOAuth2GrantUser
         return new OAuth2Client();
     }
 
-	public function checkClientCredentials(IOAuth2Client $client, $client_secret = NULL)
+    public function checkClientCredentials(IOAuth2Client $client, $client_secret = null)
     {
         return $client->getPublicId() === 'android';
     }
 
-	public function getAccessToken($oauth_token)
+    public function getAccessToken($oauth_token)
     {
         $token = $this->accessTokenStore->fetchByTokenString($oauth_token);
 
@@ -43,14 +43,14 @@ class OAuth2TokenStorage implements IOAuth2Storage, IOAuth2GrantUser
         return new OAuth2Token($token);
     }
 
-	public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = NULL)
+    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = null)
     {
         $token = new AccessToken($data, $oauth_token);
         
         $this->accessTokenStore->save($token);
     }
 
-	public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type)
+    public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type)
     {
         return true;
     }
